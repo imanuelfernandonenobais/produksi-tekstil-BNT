@@ -1,1617 +1,3204 @@
-<script>
-/* =========================================================
-   PRODUKSI TEKSTIL
-   JAVASCRIPT VERSI RAPI - PER FUNGSI
-   ========================================================= */
+<!doctype html>
+<html lang="id">
+
+<head>
+
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#0b6ee6"
+  >
+
+  <link
+    rel="manifest"
+    href="manifest.webmanifest"
+  >
+
+  <title>Produksi Tekstil</title>
 
 
-/* =========================================================
-   1. KONFIGURASI
-   BAGIAN INI YANG PALING MUDAH DIUBAH
-   ========================================================= */
+  <!-- =====================================================
+       STYLE / TAMPILAN
+  ====================================================== -->
 
-const CONFIG = {
+  <style>
 
-  appName: "Produksi Tekstil",
-
-  apiUrl:
-    "https://script.google.com/macros/s/AKfycbwiJKc4yLIFkyX6RRsFbAi4q0VUY6eHMHjbdABJLXpMvrgJNXW2T4MONau2RunulQAB/exec",
-
-  machines: [
-    "Mesin 1",
-    "Mesin 2",
-    "Mesin 3",
-    "Mesin 4",
-    "Mesin 5"
-  ],
-
-  shifts: [
-    "Pagi",
-    "Siang",
-    "Malam"
-  ],
-
-  statuses: [
-    "Berjalan",
-    "Perbaikan",
-    "Berhenti"
-  ],
-
-  defaultShift: "Pagi",
-
-  defaultStatus: "Berjalan"
-
-};
+    :root {
+      --blue: #0b6ee6;
+      --blue-dark: #0758bc;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --border: #dce3ec;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --green: #2fa84f;
+      --orange: #e39a16;
+      --red: #d33b32;
+    }
 
 
-/* =========================================================
-   2. STATE / DATA SEMENTARA
-   ========================================================= */
-
-let sharedData = [];
-
-let selectedShift =
-  CONFIG.defaultShift;
-
-let selectedStatus =
-  CONFIG.defaultStatus;
+    * {
+      box-sizing: border-box;
+    }
 
 
-/* =========================================================
-   3. HELPER - AMBIL ELEMENT HTML
-   ========================================================= */
-
-function getElement(id) {
-
-  return document.getElementById(id);
-
-}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
 
 
-/* =========================================================
-   4. HELPER - TANGGAL HARI INI
-   ========================================================= */
-
-function getToday() {
-
-  const date =
-    new Date();
-
-  const offset =
-    date.getTimezoneOffset();
-
-  return new Date(
-    date.getTime() -
-    offset * 60000
-  )
-    .toISOString()
-    .slice(0, 10);
-
-}
+    .app {
+      max-width: 520px;
+      margin: auto;
+      min-height: 100vh;
+      padding-bottom: 78px;
+    }
 
 
-/* =========================================================
-   5. HELPER - BUAT ID UNIK
-   ========================================================= */
+    /* =====================================================
+       HEADER
+    ====================================================== */
 
-function generateId() {
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 5;
 
-  if (
-    window.crypto &&
-    crypto.randomUUID
-  ) {
+      padding: 20px 24px;
 
-    return crypto.randomUUID();
+      color: #ffffff;
 
-  }
-
-  return (
-    Date.now() +
-    "-" +
-    Math.random()
-      .toString(36)
-      .slice(2)
-  );
-
-}
+      background: linear-gradient(
+        135deg,
+        #0d7bf0,
+        var(--blue-dark)
+      );
+    }
 
 
-/* =========================================================
-   6. HELPER - AMANKAN TEXT HTML
-   ========================================================= */
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
 
-function escapeHtml(value) {
 
-  return String(value || "")
-    .replace(
-      /[&<>"']/g,
-      function(character) {
+    header p {
+      margin: 5px 0 0;
+      opacity: 0.92;
+    }
 
-        const map = {
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#39;"
-        };
 
-        return map[character];
+    .online {
+      margin-top: 8px;
+      font-size: 12px;
+    }
+
+
+    /* =====================================================
+       HALAMAN
+    ====================================================== */
+
+    .screen {
+      display: none;
+      padding: 16px;
+    }
+
+
+    .screen.active {
+      display: block;
+    }
+
+
+    /* =====================================================
+       CARD
+    ====================================================== */
+
+    .card {
+      padding: 18px;
+
+      background: var(--card);
+
+      border: 1px solid var(--border);
+      border-radius: 16px;
+
+      box-shadow: 0 2px 8px #0000000d;
+    }
+
+
+    /* =====================================================
+       FORM
+    ====================================================== */
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+
+      font-weight: 700;
+    }
+
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+
+      padding: 13px 14px;
+
+      font-size: 16px;
+
+      background: #ffffff;
+
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+
+    textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+
+    /* =====================================================
+       PILIHAN SHIFT & STATUS
+    ====================================================== */
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+
+    .choice {
+      padding: 12px 5px;
+
+      font-size: 14px;
+
+      background: #ffffff;
+
+      border: 1px solid var(--border);
+      border-radius: 12px;
+
+      cursor: pointer;
+    }
+
+
+    .choice.active {
+      color: var(--blue);
+      font-weight: 700;
+
+      background: #eaf4ff;
+
+      border-color: var(--blue);
+    }
+
+
+    .status
+    .choice[data-value="Berjalan"].active {
+      color: var(--green);
+
+      background: #e9f8ed;
+
+      border-color: var(--green);
+    }
+
+
+    .status
+    .choice[data-value="Perbaikan"].active {
+      color: #9a6400;
+
+      background: #fff5df;
+
+      border-color: var(--orange);
+    }
+
+
+    .status
+    .choice[data-value="Berhenti"].active {
+      color: var(--red);
+
+      background: #fdebea;
+
+      border-color: var(--red);
+    }
+
+
+    /* =====================================================
+       TOTAL PRODUKSI
+    ====================================================== */
+
+    .total {
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+
+      margin: 4px 0 17px;
+      padding: 15px;
+
+      background: #eaf3ff;
+
+      border-radius: 12px;
+    }
+
+
+    .total strong {
+      color: var(--blue);
+      font-size: 25px;
+    }
+
+
+    /* =====================================================
+       TOMBOL
+    ====================================================== */
+
+    .btn {
+      width: 100%;
+
+      padding: 14px;
+
+      color: #ffffff;
+
+      font-size: 17px;
+      font-weight: 700;
+
+      background: var(--blue);
+
+      border: 0;
+      border-radius: 12px;
+
+      cursor: pointer;
+    }
+
+
+    .btn:disabled {
+      opacity: 0.55;
+    }
+
+
+    .reload {
+      margin-bottom: 12px;
+
+      padding: 10px 12px;
+
+      color: var(--blue);
+
+      font-weight: 700;
+
+      background: #eaf3ff;
+
+      border: 0;
+      border-radius: 10px;
+
+      cursor: pointer;
+    }
+
+
+    /* =====================================================
+       CATATAN
+    ====================================================== */
+
+    .note {
+      margin-top: 12px;
+
+      color: var(--muted);
+
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+
+    .shift-summary {
+      margin-top: 12px;
+
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+
+    /* =====================================================
+       REKAP
+    ====================================================== */
+
+    .kpis {
+      display: grid;
+
+      grid-template-columns: 1fr 1fr;
+
+      gap: 12px;
+
+      margin-bottom: 12px;
+    }
+
+
+    .kpi {
+      padding: 16px;
+
+      background: #ffffff;
+
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+
+    .kpi small {
+      color: var(--muted);
+    }
+
+
+    .kpi b {
+      display: block;
+
+      margin-top: 5px;
+
+      font-size: 23px;
+    }
+
+
+    /* =====================================================
+       RIWAYAT
+    ====================================================== */
+
+    .item {
+      margin-bottom: 10px;
+
+      padding: 14px;
+
+      background: #ffffff;
+
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+
+    .itemtop {
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 8px;
+    }
+
+
+    .meta {
+      margin-top: 5px;
+
+      color: var(--muted);
+
+      font-size: 12px;
+    }
+
+
+    .badge {
+      display: inline-block;
+
+      margin: 8px 5px 0 0;
+
+      padding: 5px 8px;
+
+      font-size: 11px;
+
+      background: #edf2f7;
+
+      border-radius: 999px;
+    }
+
+
+    .green {
+      color: #208d3d;
+      background: #e9f8ed;
+    }
+
+
+    .orange {
+      color: #966100;
+      background: #fff5df;
+    }
+
+
+    .red {
+      color: #c83129;
+      background: #fdebea;
+    }
+
+
+    .empty {
+      padding: 30px;
+
+      color: var(--muted);
+
+      text-align: center;
+    }
+
+
+    /* =====================================================
+       NAVIGASI
+    ====================================================== */
+
+    .nav {
+      position: fixed;
+
+      bottom: 0;
+      left: 50%;
+
+      z-index: 10;
+
+      display: grid;
+
+      grid-template-columns: repeat(3, 1fr);
+
+      width: 100%;
+      max-width: 520px;
+      height: 70px;
+
+      background: #ffffff;
+
+      border-top: 1px solid var(--border);
+
+      transform: translateX(-50%);
+    }
+
+
+    .nav button {
+      color: var(--muted);
+
+      font-weight: 700;
+
+      background: #ffffff;
+
+      border: 0;
+
+      cursor: pointer;
+    }
+
+
+    .nav button.active {
+      color: var(--blue);
+    }
+
+
+    .nav span {
+      display: block;
+
+      font-size: 23px;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE HP KECIL
+    ====================================================== */
+
+    @media (max-width: 380px) {
+
+      .grid,
+      .choices {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <div class="app">
+
+
+    <!-- ===================================================
+         HEADER
+    ==================================================== -->
+
+    <header>
+
+      <h1 id="pageTitle">
+        Input Produksi
+      </h1>
+
+
+      <p>
+        Data bersama · Google Sheets
+      </p>
+
+
+      <div
+        id="connection"
+        class="online"
+      >
+        Menghubungkan ke Google Sheets...
+      </div>
+
+    </header>
+
+
+
+    <!-- ===================================================
+         HALAMAN INPUT
+    ==================================================== -->
+
+    <section
+      id="inputScreen"
+      class="screen active"
+    >
+
+
+      <div class="card">
+
+
+        <!-- NAMA PENGINPUT -->
+
+        <div class="field">
+
+          <label for="penginput">
+            Nama Penginput
+          </label>
+
+          <input
+            id="penginput"
+            type="text"
+            placeholder="Contoh: Imanuel"
+          >
+
+        </div>
+
+
+
+        <!-- TANGGAL -->
+
+        <div class="field">
+
+          <label for="tanggal">
+            Tanggal
+          </label>
+
+          <input
+            id="tanggal"
+            type="date"
+          >
+
+        </div>
+
+
+
+        <!-- MESIN & JENIS KAIN -->
+
+        <div class="grid">
+
+
+          <div class="field">
+
+            <label for="mesin">
+              Mesin
+            </label>
+
+            <select id="mesin">
+            </select>
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="kain">
+              Jenis Kain
+            </label>
+
+            <input
+              id="kain"
+              type="text"
+              placeholder="Contoh: RIB"
+            >
+
+          </div>
+
+
+        </div>
+
+
+
+        <!-- SHIFT -->
+
+        <div class="field">
+
+          <label>
+            Shift
+          </label>
+
+          <div
+            class="choices"
+            id="shiftChoices"
+          >
+          </div>
+
+        </div>
+
+
+
+        <!-- JUMLAH ROLL & BERAT -->
+
+        <div class="grid">
+
+
+          <div class="field">
+
+            <label for="roll">
+              Jumlah Roll
+            </label>
+
+            <input
+              id="roll"
+              type="number"
+              min="0"
+              inputmode="numeric"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="berat">
+              Berat/Roll (kg)
+            </label>
+
+            <input
+              id="berat"
+              type="number"
+              min="0"
+              step="0.1"
+              inputmode="decimal"
+            >
+
+          </div>
+
+
+        </div>
+
+
+
+        <!-- TOTAL PRODUKSI -->
+
+        <div class="total">
+
+          <span>
+            Total Produksi
+          </span>
+
+          <strong id="total">
+            0 kg
+          </strong>
+
+        </div>
+
+
+
+        <!-- STATUS MESIN -->
+
+        <div class="field">
+
+          <label>
+            Status Mesin
+          </label>
+
+          <div
+            class="choices status"
+            id="statusChoices"
+          >
+          </div>
+
+        </div>
+
+
+
+        <!-- KENDALA -->
+
+        <div class="field">
+
+          <label for="kendala">
+            Kendala
+          </label>
+
+          <textarea
+            id="kendala"
+            placeholder="Kosongkan jika tidak ada"
+          ></textarea>
+
+        </div>
+
+
+
+        <!-- SIMPAN -->
+
+        <button
+          type="button"
+          class="btn"
+          id="saveBtn"
+        >
+          💾 Simpan ke Google Sheets
+        </button>
+
+
+        <div class="note">
+
+          Semua HP yang memakai aplikasi ini
+          akan membaca data dari Google Sheets
+          yang sama.
+
+        </div>
+
+
+      </div>
+
+
+    </section>
+
+
+
+    <!-- ===================================================
+         HALAMAN REKAP
+    ==================================================== -->
+
+    <section
+      id="rekapScreen"
+      class="screen"
+    >
+
+
+      <button
+        class="reload"
+        id="reload1"
+      >
+        ↻ Muat ulang data
+      </button>
+
+
+
+      <div class="kpis">
+
+
+        <div class="kpi">
+
+          <small>
+            Total Produksi
+          </small>
+
+          <b id="rekapKg">
+            0 kg
+          </b>
+
+        </div>
+
+
+        <div class="kpi">
+
+          <small>
+            Total Roll
+          </small>
+
+          <b id="rekapRoll">
+            0
+          </b>
+
+        </div>
+
+
+      </div>
+
+
+
+      <div class="kpis">
+
+
+        <div class="kpi">
+
+          <small>
+            Jumlah Data
+          </small>
+
+          <b id="rekapData">
+            0
+          </b>
+
+        </div>
+
+
+        <div class="kpi">
+
+          <small>
+            Status Berjalan
+          </small>
+
+          <b id="rekapJalan">
+            0
+          </b>
+
+        </div>
+
+
+      </div>
+
+
+
+      <div class="card">
+
+        <b>
+          Produksi per Shift
+        </b>
+
+        <div
+          id="shiftSummary"
+          class="note shift-summary"
+        >
+        </div>
+
+      </div>
+
+
+    </section>
+
+
+
+    <!-- ===================================================
+         HALAMAN RIWAYAT
+    ==================================================== -->
+
+    <section
+      id="riwayatScreen"
+      class="screen"
+    >
+
+
+      <button
+        class="reload"
+        id="reload2"
+      >
+        ↻ Muat ulang data
+      </button>
+
+
+      <div id="riwayatList">
+      </div>
+
+
+    </section>
+
+
+  </div>
+
+
+
+  <!-- =====================================================
+       NAVIGASI BAWAH
+  ====================================================== -->
+
+  <nav class="nav">
+
+
+    <button
+      type="button"
+      class="active"
+      data-screen="inputScreen"
+      data-title="Input Produksi"
+    >
+
+      <span>📝</span>
+
+      Input
+
+    </button>
+
+
+    <button
+      type="button"
+      data-screen="rekapScreen"
+      data-title="Rekap Produksi"
+    >
+
+      <span>📊</span>
+
+      Rekap
+
+    </button>
+
+
+    <button
+      type="button"
+      data-screen="riwayatScreen"
+      data-title="Riwayat Bersama"
+    >
+
+      <span>📚</span>
+
+      Riwayat
+
+    </button>
+
+
+  </nav>
+
+
+
+  <!-- =====================================================
+       JAVASCRIPT
+  ====================================================== -->
+
+  <script>
+
+    "use strict";
+
+
+    /* =====================================================
+       1. KONFIGURASI
+
+       BAGIAN INI YANG PALING SERING DIUBAH
+    ====================================================== */
+
+    const CONFIG = {
+
+
+      /* URL GOOGLE APPS SCRIPT */
+
+      apiUrl:
+
+        "https://script.google.com/macros/s/AKfycbwiJKc4yLIFkyX6RRsFbAi4q0VUY6eHMHjbdABJLXpMvrgJNXW2T4MONau2RunulQAB/exec",
+
+
+
+      /* ===============================================
+         DAFTAR MESIN
+
+         Kalau mau mengganti nama mesin,
+         cukup ubah bagian ini.
+      =============================================== */
+
+      machines: [
+
+        "Mesin 1",
+
+        "Mesin 2",
+
+        "Mesin 3",
+
+        "Mesin 4",
+
+        "Mesin 5"
+
+      ],
+
+
+
+      /* ===============================================
+         SHIFT
+      =============================================== */
+
+      shifts: [
+
+        "Pagi",
+
+        "Siang",
+
+        "Malam"
+
+      ],
+
+
+
+      /* ===============================================
+         STATUS MESIN
+      =============================================== */
+
+      statuses: [
+
+        "Berjalan",
+
+        "Perbaikan",
+
+        "Berhenti"
+
+      ],
+
+
+
+      /* PILIHAN DEFAULT */
+
+      defaultShift:
+        "Pagi",
+
+
+      defaultStatus:
+        "Berjalan"
+
+
+    };
+
+
+
+    /* =====================================================
+       2. STATE / DATA SEMENTARA
+    ====================================================== */
+
+    let sharedData = [];
+
+
+    let selectedShift =
+      CONFIG.defaultShift;
+
+
+    let selectedStatus =
+      CONFIG.defaultStatus;
+
+
+
+    /* =====================================================
+       3. HELPER
+       AMBIL ELEMENT HTML BERDASARKAN ID
+    ====================================================== */
+
+    function getElement(id) {
+
+      return document.getElementById(id);
+
+    }
+
+
+
+    /* =====================================================
+       4. HELPER
+       TANGGAL HARI INI
+    ====================================================== */
+
+    function getToday() {
+
+
+      const date =
+        new Date();
+
+
+      const offset =
+        date.getTimezoneOffset();
+
+
+      return new Date(
+
+        date.getTime() -
+
+        offset * 60000
+
+      )
+
+        .toISOString()
+
+        .slice(0, 10);
+
+    }
+
+
+
+    /* =====================================================
+       5. HELPER
+       MEMBUAT ID UNIK
+    ====================================================== */
+
+    function generateId() {
+
+
+      if (
+        window.crypto &&
+        crypto.randomUUID
+      ) {
+
+        return crypto.randomUUID();
 
       }
-    );
-
-}
 
 
-/* =========================================================
-   7. HELPER - DELAY
-   ========================================================= */
+      return (
 
-function delay(ms) {
+        Date.now() +
 
-  return new Promise(
-    function(resolve) {
+        "-" +
 
-      setTimeout(
-        resolve,
-        ms
+        Math.random()
+          .toString(36)
+          .slice(2)
+
       );
 
     }
-  );
-
-}
 
 
-/* =========================================================
-   8. SETUP DAFTAR MESIN
-   ========================================================= */
 
-function setupMachineOptions() {
+    /* =====================================================
+       6. HELPER
+       MENGAMANKAN TEXT HTML
+    ====================================================== */
 
-  const machineSelect =
-    getElement("mesin");
-
-  machineSelect.innerHTML =
-    CONFIG.machines
-      .map(
-        function(machine) {
-
-          return `
-            <option value="${escapeHtml(machine)}">
-              ${escapeHtml(machine)}
-            </option>
-          `;
-
-        }
-      )
-      .join("");
-
-}
+    function escapeHtml(value) {
 
 
-/* =========================================================
-   9. MEMBUAT BUTTON PILIHAN
-   Digunakan untuk Shift dan Status Mesin
-   ========================================================= */
+      return String(value || "")
 
-function createChoiceButtons(
-  containerId,
-  values,
-  activeValue
-) {
+        .replace(
 
-  const container =
-    getElement(containerId);
+          /[&<>"']/g,
 
-  container.innerHTML =
-    values
-      .map(
-        function(value) {
-
-          const activeClass =
-            value === activeValue
-              ? " active"
-              : "";
-
-          return `
-            <button
-              type="button"
-              class="choice${activeClass}"
-              data-value="${escapeHtml(value)}"
-            >
-              ${escapeHtml(value)}
-            </button>
-          `;
-
-        }
-      )
-      .join("");
-
-}
+          function(character) {
 
 
-/* =========================================================
-   10. SETUP SHIFT DAN STATUS
-   ========================================================= */
+            const map = {
 
-function setupChoiceButtons() {
+              "&":
+                "&amp;",
 
-  createChoiceButtons(
-    "shiftChoices",
-    CONFIG.shifts,
-    selectedShift
-  );
+              "<":
+                "&lt;",
 
-  createChoiceButtons(
-    "statusChoices",
-    CONFIG.statuses,
-    selectedStatus
-  );
+              ">":
+                "&gt;",
 
-  bindChoiceEvents();
+              '"':
+                "&quot;",
 
-}
+              "'":
+                "&#39;"
+
+            };
 
 
-/* =========================================================
-   11. MENGAKTIFKAN PILIHAN
-   ========================================================= */
+            return map[character];
 
-function setActiveChoice(
-  containerId,
-  selectedValue
-) {
+          }
 
-  document
-    .querySelectorAll(
-      "#" +
-      containerId +
-      " .choice"
-    )
-    .forEach(
-      function(button) {
-
-        button.classList.toggle(
-          "active",
-          button.dataset.value ===
-            selectedValue
         );
 
-      }
-    );
-
-}
+    }
 
 
-/* =========================================================
-   12. EVENT SHIFT DAN STATUS
-   ========================================================= */
 
-function bindChoiceEvents() {
+    /* =====================================================
+       7. HELPER
+       DELAY
+    ====================================================== */
 
-  document
-    .querySelectorAll(
-      "#shiftChoices .choice"
-    )
-    .forEach(
-      function(button) {
+    function delay(ms) {
 
-        button.addEventListener(
-          "click",
-          function() {
 
-            selectedShift =
-              button.dataset.value;
+      return new Promise(
 
-            setActiveChoice(
-              "shiftChoices",
-              selectedShift
+        function(resolve) {
+
+          setTimeout(
+            resolve,
+            ms
+          );
+
+        }
+
+      );
+
+    }
+
+
+
+    /* =====================================================
+       8. SETUP DAFTAR MESIN
+    ====================================================== */
+
+    function setupMachineOptions() {
+
+
+      const machineSelect =
+        getElement(
+          "mesin"
+        );
+
+
+      machineSelect.innerHTML =
+
+        CONFIG.machines
+
+          .map(
+
+            function(machine) {
+
+
+              return (
+
+                '<option value="' +
+
+                escapeHtml(machine) +
+
+                '">' +
+
+                escapeHtml(machine) +
+
+                "</option>"
+
+              );
+
+            }
+
+          )
+
+          .join("");
+
+    }
+
+
+
+    /* =====================================================
+       9. MEMBUAT BUTTON PILIHAN
+       UNTUK SHIFT & STATUS
+    ====================================================== */
+
+    function createChoiceButtons(
+
+      containerId,
+
+      values,
+
+      activeValue
+
+    ) {
+
+
+      const container =
+        getElement(
+          containerId
+        );
+
+
+      container.innerHTML =
+
+        values
+
+          .map(
+
+            function(value) {
+
+
+              const activeClass =
+
+                value === activeValue
+
+                  ? " active"
+
+                  : "";
+
+
+              return (
+
+                '<button ' +
+
+                'type="button" ' +
+
+                'class="choice' +
+
+                activeClass +
+
+                '" ' +
+
+                'data-value="' +
+
+                escapeHtml(value) +
+
+                '">' +
+
+                escapeHtml(value) +
+
+                "</button>"
+
+              );
+
+            }
+
+          )
+
+          .join("");
+
+    }
+
+
+
+    /* =====================================================
+       10. SETUP SHIFT DAN STATUS
+    ====================================================== */
+
+    function setupChoiceButtons() {
+
+
+      createChoiceButtons(
+
+        "shiftChoices",
+
+        CONFIG.shifts,
+
+        selectedShift
+
+      );
+
+
+      createChoiceButtons(
+
+        "statusChoices",
+
+        CONFIG.statuses,
+
+        selectedStatus
+
+      );
+
+
+      bindChoiceEvents();
+
+    }
+
+
+
+    /* =====================================================
+       11. MEMBERI STATUS ACTIVE PADA PILIHAN
+    ====================================================== */
+
+    function setActiveChoice(
+
+      containerId,
+
+      selectedValue
+
+    ) {
+
+
+      document
+
+        .querySelectorAll(
+
+          "#" +
+
+          containerId +
+
+          " .choice"
+
+        )
+
+        .forEach(
+
+          function(button) {
+
+
+            button.classList.toggle(
+
+              "active",
+
+              button.dataset.value ===
+                selectedValue
+
             );
 
           }
+
         );
 
-      }
-    );
+    }
 
 
-  document
-    .querySelectorAll(
-      "#statusChoices .choice"
-    )
-    .forEach(
-      function(button) {
 
-        button.addEventListener(
-          "click",
-          function() {
+    /* =====================================================
+       12. EVENT SHIFT & STATUS
+    ====================================================== */
 
-            selectedStatus =
-              button.dataset.value;
+    function bindChoiceEvents() {
 
-            setActiveChoice(
-              "statusChoices",
-              selectedStatus
+
+      document
+
+        .querySelectorAll(
+
+          "#shiftChoices .choice"
+
+        )
+
+        .forEach(
+
+          function(button) {
+
+
+            button.addEventListener(
+
+              "click",
+
+              function() {
+
+
+                selectedShift =
+                  button.dataset.value;
+
+
+                setActiveChoice(
+
+                  "shiftChoices",
+
+                  selectedShift
+
+                );
+
+              }
+
             );
 
           }
-        );
 
-      }
-    );
-
-}
-
-
-/* =========================================================
-   13. HITUNG TOTAL PRODUKSI
-   Total = Jumlah Roll × Berat/Roll
-   ========================================================= */
-
-function calculateTotalProduction() {
-
-  const roll =
-    Number(
-      getElement("roll").value ||
-      0
-    );
-
-  const weight =
-    Number(
-      getElement("berat").value ||
-      0
-    );
-
-  const total =
-    roll * weight;
-
-  getElement("total")
-    .textContent =
-    total.toLocaleString(
-      "id-ID"
-    ) +
-    " kg";
-
-}
-
-
-/* =========================================================
-   14. JSONP
-   Digunakan untuk membaca Google Sheets
-   ========================================================= */
-
-function requestJsonp(params) {
-
-  return new Promise(
-    function(resolve, reject) {
-
-      const callbackName =
-        "callback_" +
-        Date.now() +
-        "_" +
-        Math.random()
-          .toString(36)
-          .slice(2);
-
-
-      const script =
-        document.createElement(
-          "script"
         );
 
 
-      const timeout =
-        setTimeout(
-          function() {
 
-            cleanup();
+      document
 
-            reject(
-              new Error(
-                "Waktu koneksi habis"
-              )
+        .querySelectorAll(
+
+          "#statusChoices .choice"
+
+        )
+
+        .forEach(
+
+          function(button) {
+
+
+            button.addEventListener(
+
+              "click",
+
+              function() {
+
+
+                selectedStatus =
+                  button.dataset.value;
+
+
+                setActiveChoice(
+
+                  "statusChoices",
+
+                  selectedStatus
+
+                );
+
+              }
+
             );
 
-          },
-          15000
+          }
+
         );
 
+    }
 
-      function cleanup() {
 
-        clearTimeout(
-          timeout
-        );
 
-        delete window[
-          callbackName
-        ];
+    /* =====================================================
+       13. HITUNG TOTAL PRODUKSI
 
-        if (
-          script.parentNode
+       Jumlah Roll × Berat/Roll
+    ====================================================== */
+
+    function calculateTotalProduction() {
+
+
+      const roll = Number(
+
+        getElement(
+          "roll"
+        ).value || 0
+
+      );
+
+
+      const weight = Number(
+
+        getElement(
+          "berat"
+        ).value || 0
+
+      );
+
+
+      const total =
+        roll * weight;
+
+
+      getElement(
+        "total"
+      ).textContent =
+
+        total
+          .toLocaleString(
+            "id-ID"
+          ) +
+
+        " kg";
+
+    }
+
+
+
+    /* =====================================================
+       14. JSONP
+
+       Untuk membaca data dari Google Sheets
+    ====================================================== */
+
+    function requestJsonp(params) {
+
+
+      return new Promise(
+
+        function(
+          resolve,
+          reject
         ) {
 
-          script.parentNode
-            .removeChild(
+
+          const callbackName =
+
+            "callback_" +
+
+            Date.now() +
+
+            "_" +
+
+            Math.random()
+              .toString(36)
+              .slice(2);
+
+
+
+          const script =
+
+            document.createElement(
+              "script"
+            );
+
+
+
+          const timeout =
+
+            setTimeout(
+
+              function() {
+
+
+                cleanup();
+
+
+                reject(
+
+                  new Error(
+                    "Waktu koneksi habis"
+                  )
+
+                );
+
+              },
+
+              15000
+
+            );
+
+
+
+          function cleanup() {
+
+
+            clearTimeout(
+              timeout
+            );
+
+
+            delete window[
+              callbackName
+            ];
+
+
+            if (
+              script.parentNode
+            ) {
+
+              script.parentNode
+                .removeChild(
+                  script
+                );
+
+            }
+
+          }
+
+
+
+          window[
+            callbackName
+          ] =
+
+            function(result) {
+
+
+              cleanup();
+
+
+              resolve(
+                result
+              );
+
+            };
+
+
+
+          params.callback =
+            callbackName;
+
+
+          params.t =
+            Date.now();
+
+
+
+          const queryString =
+
+            Object
+              .keys(params)
+
+              .map(
+
+                function(key) {
+
+
+                  return (
+
+                    encodeURIComponent(
+                      key
+                    ) +
+
+                    "=" +
+
+                    encodeURIComponent(
+                      params[key]
+                    )
+
+                  );
+
+                }
+
+              )
+
+              .join("&");
+
+
+
+          script.src =
+
+            CONFIG.apiUrl +
+
+            "?" +
+
+            queryString;
+
+
+
+          script.onerror =
+
+            function() {
+
+
+              cleanup();
+
+
+              reject(
+
+                new Error(
+                  "Gagal membaca data"
+                )
+
+              );
+
+            };
+
+
+
+          document.body
+            .appendChild(
               script
             );
 
         }
 
-      }
-
-
-      window[
-        callbackName
-      ] =
-        function(result) {
-
-          cleanup();
-
-          resolve(
-            result
-          );
-
-        };
-
-
-      params.callback =
-        callbackName;
-
-      params.t =
-        Date.now();
-
-
-      const queryString =
-        Object
-          .keys(params)
-          .map(
-            function(key) {
-
-              return (
-                encodeURIComponent(
-                  key
-                ) +
-                "=" +
-                encodeURIComponent(
-                  params[key]
-                )
-              );
-
-            }
-          )
-          .join("&");
-
-
-      script.src =
-        CONFIG.apiUrl +
-        "?" +
-        queryString;
-
-
-      script.onerror =
-        function() {
-
-          cleanup();
-
-          reject(
-            new Error(
-              "Gagal membaca data"
-            )
-          );
-
-        };
-
-
-      document.body
-        .appendChild(
-          script
-        );
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   15. LOAD DATA DARI GOOGLE SHEETS
-   ========================================================= */
-
-async function loadData() {
-
-  const connection =
-    getElement(
-      "connection"
-    );
-
-
-  connection.textContent =
-    "Memuat data bersama...";
-
-
-  try {
-
-    const response =
-      await requestJsonp({
-        action: "list"
-      });
-
-
-    if (
-      !response ||
-      response.ok === false
-    ) {
-
-      throw new Error(
-        (
-          response &&
-          response.message
-        ) ||
-        "Respons tidak valid"
       );
 
     }
 
 
-    sharedData =
-      response.data || [];
+
+    /* =====================================================
+       15. LOAD DATA DARI GOOGLE SHEETS
+    ====================================================== */
+
+    async function loadData() {
 
 
-    connection.textContent =
-      "Terhubung ✓ · " +
-      sharedData.length +
-      " data bersama";
+      const connection =
+
+        getElement(
+          "connection"
+        );
 
 
-    renderAllData();
+      connection.textContent =
+
+        "Memuat data bersama...";
 
 
-    return sharedData;
 
-  }
-
-  catch(error) {
-
-    connection.textContent =
-      "Koneksi gagal: " +
-      error.message;
-
-    throw error;
-
-  }
-
-}
+      try {
 
 
-/* =========================================================
-   16. VALIDASI FORM
-   ========================================================= */
+        const response =
 
-function validateForm() {
+          await requestJsonp({
 
-  const name =
-    getElement(
-      "penginput"
-    )
-      .value
-      .trim();
+            action:
+              "list"
+
+          });
 
 
-  const roll =
-    Number(
-      getElement(
-        "roll"
-      ).value || 0
-    );
+
+        if (
+
+          !response ||
+
+          response.ok === false
+
+        ) {
 
 
-  const weight =
-    Number(
-      getElement(
-        "berat"
-      ).value || 0
-    );
+          throw new Error(
+
+            (
+              response &&
+              response.message
+            )
+
+            ||
+
+            "Respons tidak valid"
+
+          );
+
+        }
 
 
-  if (!name) {
 
-    return {
-      valid: false,
-      message:
-        "Isi Nama Penginput."
-    };
+        sharedData =
 
-  }
+          response.data || [];
 
 
-  if (roll <= 0) {
 
-    return {
-      valid: false,
-      message:
-        "Jumlah Roll harus lebih dari 0."
-    };
+        connection.textContent =
 
-  }
+          "Terhubung ✓ · " +
 
+          sharedData.length +
 
-  if (weight <= 0) {
-
-    return {
-      valid: false,
-      message:
-        "Berat/Roll harus lebih dari 0."
-    };
-
-  }
+          " data bersama";
 
 
-  return {
-    valid: true
-  };
 
-}
+        renderAllData();
 
 
-/* =========================================================
-   17. MEMBUAT DATA PRODUKSI
-   ========================================================= */
 
-function createProductionPayload(
-  recordId
-) {
+        return sharedData;
 
-  return {
 
-    id:
-      recordId,
+      }
 
-    tanggal:
-      getElement(
-        "tanggal"
-      ).value,
+      catch(error) {
 
-    mesin:
-      getElement(
-        "mesin"
-      ).value,
 
-    shift:
-      selectedShift,
+        connection.textContent =
 
-    jenisKain:
-      getElement(
-        "kain"
-      )
-        .value
-        .trim() ||
-      "-",
+          "Koneksi gagal: " +
 
-    jumlahRoll:
-      Number(
+          error.message;
+
+
+        throw error;
+
+      }
+
+    }
+
+
+
+    /* =====================================================
+       16. VALIDASI FORM
+    ====================================================== */
+
+    function validateForm() {
+
+
+      const name =
+
+        getElement(
+          "penginput"
+        )
+          .value
+          .trim();
+
+
+
+      const roll = Number(
+
         getElement(
           "roll"
         ).value || 0
-      ),
 
-    beratRoll:
-      Number(
+      );
+
+
+
+      const weight = Number(
+
         getElement(
           "berat"
         ).value || 0
-      ),
 
-    status:
-      selectedStatus,
-
-    kendala:
-      getElement(
-        "kendala"
-      )
-        .value
-        .trim() ||
-      "-",
-
-    penginput:
-      getElement(
-        "penginput"
-      )
-        .value
-        .trim()
-
-  };
-
-}
+      );
 
 
-/* =========================================================
-   18. STATUS TOMBOL SIMPAN
-   ========================================================= */
 
-function setSaveButtonLoading(
-  isLoading
-) {
-
-  const button =
-    getElement(
-      "saveBtn"
-    );
+      if (!name) {
 
 
-  button.disabled =
-    isLoading;
+        return {
 
+          valid:
+            false,
 
-  button.textContent =
-    isLoading
-      ? "Mengirim..."
-      : "💾 Simpan ke Google Sheets";
+          message:
+            "Isi Nama Penginput."
 
-}
-
-
-/* =========================================================
-   19. SIMPAN DATA KE GOOGLE SHEETS
-   ========================================================= */
-
-async function saveProductionData() {
-
-  const validation =
-    validateForm();
-
-
-  if (
-    !validation.valid
-  ) {
-
-    alert(
-      validation.message
-    );
-
-    return;
-
-  }
-
-
-  const inputName =
-    getElement(
-      "penginput"
-    )
-      .value
-      .trim();
-
-
-  localStorage.setItem(
-    "nama_penginput",
-    inputName
-  );
-
-
-  const recordId =
-    generateId();
-
-
-  const payload =
-    createProductionPayload(
-      recordId
-    );
-
-
-  setSaveButtonLoading(
-    true
-  );
-
-
-  try {
-
-    await fetch(
-      CONFIG.apiUrl,
-      {
-
-        method:
-          "POST",
-
-        mode:
-          "no-cors",
-
-        headers: {
-
-          "Content-Type":
-            "text/plain;charset=utf-8"
-
-        },
-
-        body:
-          JSON.stringify(
-            payload
-          )
+        };
 
       }
-    );
 
 
-    await delay(
-      1600
-    );
+
+      if (roll <= 0) {
 
 
-    const rows =
-      await loadData();
+        return {
+
+          valid:
+            false,
+
+          message:
+            "Jumlah Roll harus lebih dari 0."
+
+        };
+
+      }
 
 
-    const dataExists =
-      rows.some(
-        function(row) {
 
-          return (
-            row.id ===
-            recordId
+      if (weight <= 0) {
+
+
+        return {
+
+          valid:
+            false,
+
+          message:
+            "Berat/Roll harus lebih dari 0."
+
+        };
+
+      }
+
+
+
+      return {
+
+        valid:
+          true
+
+      };
+
+    }
+
+
+
+    /* =====================================================
+       17. MEMBUAT DATA PRODUKSI
+    ====================================================== */
+
+    function createProductionPayload(
+      recordId
+    ) {
+
+
+      return {
+
+
+        id:
+          recordId,
+
+
+        tanggal:
+
+          getElement(
+            "tanggal"
+          ).value,
+
+
+        mesin:
+
+          getElement(
+            "mesin"
+          ).value,
+
+
+        shift:
+          selectedShift,
+
+
+        jenisKain:
+
+          getElement(
+            "kain"
+          )
+            .value
+            .trim()
+
+          || "-",
+
+
+        jumlahRoll:
+
+          Number(
+
+            getElement(
+              "roll"
+            ).value || 0
+
+          ),
+
+
+        beratRoll:
+
+          Number(
+
+            getElement(
+              "berat"
+            ).value || 0
+
+          ),
+
+
+        status:
+          selectedStatus,
+
+
+        kendala:
+
+          getElement(
+            "kendala"
+          )
+            .value
+            .trim()
+
+          || "-",
+
+
+        penginput:
+
+          getElement(
+            "penginput"
+          )
+            .value
+            .trim()
+
+
+      };
+
+    }
+
+
+
+    /* =====================================================
+       18. STATUS TOMBOL SIMPAN
+    ====================================================== */
+
+    function setSaveButtonLoading(
+      isLoading
+    ) {
+
+
+      const button =
+
+        getElement(
+          "saveBtn"
+        );
+
+
+      button.disabled =
+        isLoading;
+
+
+      button.textContent =
+
+        isLoading
+
+          ? "Mengirim..."
+
+          : "💾 Simpan ke Google Sheets";
+
+    }
+
+
+
+    /* =====================================================
+       19. SIMPAN DATA KE GOOGLE SHEETS
+    ====================================================== */
+
+    async function saveProductionData() {
+
+
+      const validation =
+        validateForm();
+
+
+
+      if (
+        !validation.valid
+      ) {
+
+
+        alert(
+          validation.message
+        );
+
+
+        return;
+
+      }
+
+
+
+      const inputName =
+
+        getElement(
+          "penginput"
+        )
+          .value
+          .trim();
+
+
+
+      localStorage.setItem(
+
+        "nama_penginput",
+
+        inputName
+
+      );
+
+
+
+      const recordId =
+        generateId();
+
+
+
+      const payload =
+
+        createProductionPayload(
+          recordId
+        );
+
+
+
+      setSaveButtonLoading(
+        true
+      );
+
+
+
+      try {
+
+
+        await fetch(
+
+          CONFIG.apiUrl,
+
+          {
+
+
+            method:
+              "POST",
+
+
+            mode:
+              "no-cors",
+
+
+            headers: {
+
+
+              "Content-Type":
+
+                "text/plain;charset=utf-8"
+
+
+            },
+
+
+            body:
+
+              JSON.stringify(
+                payload
+              )
+
+
+          }
+
+        );
+
+
+
+        await delay(
+          1600
+        );
+
+
+
+        const rows =
+
+          await loadData();
+
+
+
+        const dataExists =
+
+          rows.some(
+
+            function(row) {
+
+
+              return (
+
+                row.id ===
+                recordId
+
+              );
+
+            }
+
+          );
+
+
+
+        if (dataExists) {
+
+
+          alert(
+
+            "Data berhasil masuk ke Google Sheets."
+
+          );
+
+
+          resetForm();
+
+        }
+
+
+        else {
+
+
+          alert(
+
+            "Data sudah dikirim. Tekan Muat ulang jika belum terlihat."
+
           );
 
         }
-      );
 
 
-    if (dataExists) {
+      }
 
-      alert(
-        "Data berhasil masuk ke Google Sheets."
-      );
+      catch(error) {
 
-      resetForm();
+
+        alert(
+
+          "Gagal mengirim data. Periksa internet."
+
+        );
+
+
+      }
+
+      finally {
+
+
+        setSaveButtonLoading(
+          false
+        );
+
+      }
 
     }
 
-    else {
 
-      alert(
-        "Data sudah dikirim. Tekan Muat ulang jika belum terlihat."
+
+    /* =====================================================
+       20. RESET FORM
+    ====================================================== */
+
+    function resetForm() {
+
+
+      getElement(
+        "tanggal"
+      ).value =
+
+        getToday();
+
+
+
+      if (
+        CONFIG.machines.length > 0
+      ) {
+
+
+        getElement(
+          "mesin"
+        ).value =
+
+          CONFIG.machines[0];
+
+      }
+
+
+
+      getElement(
+        "kain"
+      ).value =
+        "";
+
+
+
+      getElement(
+        "roll"
+      ).value =
+        "";
+
+
+
+      getElement(
+        "berat"
+      ).value =
+        "";
+
+
+
+      getElement(
+        "kendala"
+      ).value =
+        "";
+
+
+
+      selectedShift =
+
+        CONFIG.defaultShift;
+
+
+
+      selectedStatus =
+
+        CONFIG.defaultStatus;
+
+
+
+      setActiveChoice(
+
+        "shiftChoices",
+
+        selectedShift
+
       );
+
+
+
+      setActiveChoice(
+
+        "statusChoices",
+
+        selectedStatus
+
+      );
+
+
+
+      calculateTotalProduction();
 
     }
 
-  }
 
-  catch(error) {
 
-    alert(
-      "Gagal mengirim data. Periksa internet."
-    );
+    /* =====================================================
+       21. WARNA STATUS RIWAYAT
+    ====================================================== */
 
-  }
+    function getStatusClass(
+      status
+    ) {
 
-  finally {
 
-    setSaveButtonLoading(
-      false
-    );
+      if (
+        status === "Berjalan"
+      ) {
 
-  }
+        return "green";
 
-}
+      }
 
 
-/* =========================================================
-   20. RESET FORM
-   ========================================================= */
+      if (
+        status === "Perbaikan"
+      ) {
 
-function resetForm() {
+        return "orange";
 
-  getElement(
-    "tanggal"
-  ).value =
-    getToday();
+      }
 
 
-  if (
-    CONFIG.machines.length >
-    0
-  ) {
+      return "red";
 
-    getElement(
-      "mesin"
-    ).value =
-      CONFIG.machines[0];
+    }
 
-  }
 
 
-  getElement(
-    "kain"
-  ).value =
-    "";
+    /* =====================================================
+       22. TAMPILKAN RIWAYAT
+    ====================================================== */
 
+    function renderHistory() {
 
-  getElement(
-    "roll"
-  ).value =
-    "";
 
+      const container =
 
-  getElement(
-    "berat"
-  ).value =
-    "";
+        getElement(
+          "riwayatList"
+        );
 
 
-  getElement(
-    "kendala"
-  ).value =
-    "";
 
+      if (
+        sharedData.length === 0
+      ) {
 
-  selectedShift =
-    CONFIG.defaultShift;
 
+        container.innerHTML =
 
-  selectedStatus =
-    CONFIG.defaultStatus;
+          '<div class="empty">' +
 
+          "Belum ada data bersama." +
 
-  setActiveChoice(
-    "shiftChoices",
-    selectedShift
-  );
+          "</div>";
 
 
-  setActiveChoice(
-    "statusChoices",
-    selectedStatus
-  );
+        return;
 
+      }
 
-  calculateTotalProduction();
 
-}
 
+      container.innerHTML =
 
-/* =========================================================
-   21. WARNA STATUS
-   ========================================================= */
+        sharedData
 
-function getStatusClass(
-  status
-) {
+          .map(
 
-  if (
-    status ===
-    "Berjalan"
-  ) {
+            function(record) {
 
-    return "green";
 
-  }
+              return `
 
+                <div class="item">
 
-  if (
-    status ===
-    "Perbaikan"
-  ) {
 
-    return "orange";
+                  <div class="itemtop">
 
-  }
 
+                    <div>
 
-  return "red";
 
-}
+                      <b>
 
+                        ${escapeHtml(record.tanggal)}
 
-/* =========================================================
-   22. TAMPILKAN RIWAYAT
-   ========================================================= */
+                        ·
 
-function renderHistory() {
+                        ${escapeHtml(record.shift)}
 
-  const container =
-    getElement(
-      "riwayatList"
-    );
+                      </b>
 
 
-  if (
-    sharedData.length ===
-    0
-  ) {
+                      <div class="meta">
 
-    container.innerHTML =
+                        ${escapeHtml(record.mesin)}
 
-      '<div class="empty">' +
+                        ·
 
-      "Belum ada data bersama." +
+                        ${escapeHtml(record.jenisKain)}
 
-      "</div>";
+                        · oleh
 
+                        ${escapeHtml(record.penginput)}
 
-    return;
+                      </div>
 
-  }
 
+                    </div>
 
-  container.innerHTML =
 
-    sharedData
+                    <span
+                      class="badge ${getStatusClass(record.status)}"
+                    >
 
-      .map(
-        function(record) {
+                      ${escapeHtml(record.status)}
 
-          return `
+                    </span>
 
-            <div class="item">
-
-              <div class="itemtop">
-
-                <div>
-
-                  <b>
-                    ${escapeHtml(record.tanggal)}
-                    ·
-                    ${escapeHtml(record.shift)}
-                  </b>
-
-                  <div class="meta">
-
-                    ${escapeHtml(record.mesin)}
-                    ·
-                    ${escapeHtml(record.jenisKain)}
-                    · oleh
-                    ${escapeHtml(record.penginput)}
 
                   </div>
 
+
+                  <span class="badge">
+
+                    ${record.jumlahRoll}
+                    roll
+
+                  </span>
+
+
+                  <span class="badge">
+
+                    ${record.totalKg}
+                    kg
+
+                  </span>
+
+
+                  <span class="badge">
+
+                    Kendala:
+
+                    ${escapeHtml(record.kendala)}
+
+                  </span>
+
+
                 </div>
 
+              `;
 
-                <span
-                  class="badge ${getStatusClass(record.status)}"
-                >
+            }
 
-                  ${escapeHtml(record.status)}
-
-                </span>
-
-              </div>
-
-
-              <span class="badge">
-
-                ${record.jumlahRoll}
-                roll
-
-              </span>
-
-
-              <span class="badge">
-
-                ${record.totalKg}
-                kg
-
-              </span>
-
-
-              <span class="badge">
-
-                Kendala:
-                ${escapeHtml(record.kendala)}
-
-              </span>
-
-            </div>
-
-          `;
-
-        }
-      )
-
-      .join("");
-
-}
-
-
-/* =========================================================
-   23. HITUNG TOTAL KG
-   ========================================================= */
-
-function calculateTotalKg() {
-
-  return sharedData
-    .reduce(
-      function(
-        total,
-        record
-      ) {
-
-        return (
-          total +
-          Number(
-            record.totalKg ||
-            0
           )
-        );
 
-      },
-      0
-    );
+          .join("");
 
-}
+    }
 
 
-/* =========================================================
-   24. HITUNG TOTAL ROLL
-   ========================================================= */
 
-function calculateTotalRoll() {
+    /* =====================================================
+       23. HITUNG TOTAL KG
+    ====================================================== */
 
-  return sharedData
-    .reduce(
-      function(
-        total,
-        record
-      ) {
-
-        return (
-          total +
-          Number(
-            record.jumlahRoll ||
-            0
-          )
-        );
-
-      },
-      0
-    );
-
-}
+    function calculateTotalKg() {
 
 
-/* =========================================================
-   25. HITUNG STATUS BERJALAN
-   ========================================================= */
+      return sharedData
 
-function countRunningMachines() {
+        .reduce(
 
-  return sharedData
-    .filter(
-      function(record) {
-
-        return (
-          record.status ===
-          "Berjalan"
-        );
-
-      }
-    )
-    .length;
-
-}
+          function(
+            total,
+            record
+          ) {
 
 
-/* =========================================================
-   26. HITUNG PRODUKSI PER SHIFT
-   ========================================================= */
+            return (
 
-function calculateProductionPerShift() {
+              total +
 
-  const result = {};
+              Number(
+                record.totalKg || 0
+              )
 
-
-  CONFIG.shifts
-    .forEach(
-      function(shift) {
-
-        result[shift] =
-          0;
-
-      }
-    );
-
-
-  sharedData
-    .forEach(
-      function(record) {
-
-        if (
-          result[
-            record.shift
-          ] !== undefined
-        ) {
-
-          result[
-            record.shift
-          ] +=
-            Number(
-              record.totalKg ||
-              0
             );
 
-        }
+          },
 
-      }
-    );
+          0
 
+        );
 
-  return result;
+    }
 
-}
 
 
-/* =========================================================
-   27. TAMPILKAN REKAP
-   ========================================================= */
+    /* =====================================================
+       24. HITUNG TOTAL ROLL
+    ====================================================== */
 
-function renderRecap() {
+    function calculateTotalRoll() {
 
-  const totalKg =
-    calculateTotalKg();
 
+      return sharedData
 
-  const totalRoll =
-    calculateTotalRoll();
+        .reduce(
 
+          function(
+            total,
+            record
+          ) {
 
-  const running =
-    countRunningMachines();
 
+            return (
 
-  const productionPerShift =
-    calculateProductionPerShift();
+              total +
 
+              Number(
+                record.jumlahRoll || 0
+              )
 
-  getElement(
-    "rekapKg"
-  ).textContent =
+            );
 
-    totalKg
-      .toLocaleString(
-        "id-ID"
-      ) +
+          },
 
-    " kg";
+          0
 
+        );
 
-  getElement(
-    "rekapRoll"
-  ).textContent =
+    }
 
-    totalRoll;
 
 
-  getElement(
-    "rekapData"
-  ).textContent =
+    /* =====================================================
+       25. HITUNG JUMLAH STATUS BERJALAN
+    ====================================================== */
 
-    sharedData.length;
+    function countRunningStatus() {
 
 
-  getElement(
-    "rekapJalan"
-  ).textContent =
+      return sharedData
 
-    running;
+        .filter(
 
+          function(record) {
 
-  getElement(
-    "shiftSummary"
-  ).innerHTML =
 
-    CONFIG.shifts
+            return (
 
-      .map(
-        function(shift) {
-
-          return (
-
-            escapeHtml(
-              shift
-            ) +
-
-            ": <b>" +
-
-            productionPerShift[
-              shift
-            ] +
-
-            " kg</b>"
-
-          );
-
-        }
-      )
-
-      .join("<br>");
-
-}
-
-
-/* =========================================================
-   28. RENDER SEMUA
-   ========================================================= */
-
-function renderAllData() {
-
-  renderHistory();
-
-  renderRecap();
-
-}
-
-
-/* =========================================================
-   29. NAVIGASI HALAMAN
-   ========================================================= */
-
-function openScreen(
-  screenId,
-  title
-) {
-
-  document
-    .querySelectorAll(
-      ".screen"
-    )
-    .forEach(
-      function(screen) {
-
-        screen.classList
-          .remove(
-            "active"
-          );
-
-      }
-    );
-
-
-  getElement(
-    screenId
-  )
-    .classList
-    .add(
-      "active"
-    );
-
-
-  document
-    .querySelectorAll(
-      ".nav button"
-    )
-    .forEach(
-      function(button) {
-
-        button.classList
-          .toggle(
-
-            "active",
-
-            button.dataset.screen ===
-              screenId
-
-          );
-
-      }
-    );
-
-
-  getElement(
-    "pageTitle"
-  ).textContent =
-    title;
-
-
-  if (
-    screenId !==
-    "inputScreen"
-  ) {
-
-    loadData()
-      .catch(
-        function() {}
-      );
-
-  }
-
-}
-
-
-/* =========================================================
-   30. EVENT UTAMA
-   ========================================================= */
-
-function bindMainEvents() {
-
-  getElement(
-    "roll"
-  )
-    .addEventListener(
-      "input",
-      calculateTotalProduction
-    );
-
-
-  getElement(
-    "berat"
-  )
-    .addEventListener(
-      "input",
-      calculateTotalProduction
-    );
-
-
-  getElement(
-    "saveBtn"
-  )
-    .addEventListener(
-      "click",
-      saveProductionData
-    );
-
-
-  getElement(
-    "reload1"
-  )
-    .addEventListener(
-      "click",
-      function() {
-
-        loadData()
-          .catch(
-            function() {}
-          );
-
-      }
-    );
-
-
-  getElement(
-    "reload2"
-  )
-    .addEventListener(
-      "click",
-      function() {
-
-        loadData()
-          .catch(
-            function() {}
-          );
-
-      }
-    );
-
-
-  document
-    .querySelectorAll(
-      ".nav button"
-    )
-    .forEach(
-      function(button) {
-
-        button.addEventListener(
-          "click",
-          function() {
-
-            openScreen(
-
-              button.dataset.screen,
-
-              button.dataset.title
+              record.status ===
+              "Berjalan"
 
             );
 
           }
+
+        )
+
+        .length;
+
+    }
+
+
+
+    /* =====================================================
+       26. HITUNG PRODUKSI PER SHIFT
+    ====================================================== */
+
+    function calculateProductionPerShift() {
+
+
+      const result =
+        {};
+
+
+
+      CONFIG.shifts
+
+        .forEach(
+
+          function(shift) {
+
+
+            result[shift] =
+              0;
+
+          }
+
         );
 
-      }
-    );
-
-}
 
 
-/* =========================================================
-   31. SERVICE WORKER
-   ========================================================= */
+      sharedData
 
-function registerServiceWorker() {
+        .forEach(
 
-  if (
-    !(
-      "serviceWorker"
-      in navigator
-    )
-  ) {
-
-    return;
-
-  }
+          function(record) {
 
 
-  window.addEventListener(
-    "load",
-    function() {
+            if (
 
-      navigator
-        .serviceWorker
-        .register(
-          "./service-worker.js"
+              result[
+                record.shift
+              ] !== undefined
+
+            ) {
+
+
+              result[
+                record.shift
+              ] +=
+
+                Number(
+                  record.totalKg || 0
+                );
+
+            }
+
+          }
+
+        );
+
+
+
+      return result;
+
+    }
+
+
+
+    /* =====================================================
+       27. TAMPILKAN REKAP
+    ====================================================== */
+
+    function renderRecap() {
+
+
+      const totalKg =
+
+        calculateTotalKg();
+
+
+
+      const totalRoll =
+
+        calculateTotalRoll();
+
+
+
+      const running =
+
+        countRunningStatus();
+
+
+
+      const productionPerShift =
+
+        calculateProductionPerShift();
+
+
+
+      getElement(
+        "rekapKg"
+      ).textContent =
+
+        totalKg
+          .toLocaleString(
+            "id-ID"
+          )
+
+        +
+
+        " kg";
+
+
+
+      getElement(
+        "rekapRoll"
+      ).textContent =
+
+        totalRoll;
+
+
+
+      getElement(
+        "rekapData"
+      ).textContent =
+
+        sharedData.length;
+
+
+
+      getElement(
+        "rekapJalan"
+      ).textContent =
+
+        running;
+
+
+
+      getElement(
+        "shiftSummary"
+      ).innerHTML =
+
+        CONFIG.shifts
+
+          .map(
+
+            function(shift) {
+
+
+              return (
+
+                escapeHtml(
+                  shift
+                )
+
+                +
+
+                ": <b>"
+
+                +
+
+                productionPerShift[
+                  shift
+                ]
+
+                +
+
+                " kg</b>"
+
+              );
+
+            }
+
+          )
+
+          .join("<br>");
+
+    }
+
+
+
+    /* =====================================================
+       28. RENDER SEMUA DATA
+    ====================================================== */
+
+    function renderAllData() {
+
+
+      renderHistory();
+
+
+      renderRecap();
+
+    }
+
+
+
+    /* =====================================================
+       29. NAVIGASI HALAMAN
+    ====================================================== */
+
+    function openScreen(
+
+      screenId,
+
+      title
+
+    ) {
+
+
+      document
+
+        .querySelectorAll(
+          ".screen"
         )
+
+        .forEach(
+
+          function(screen) {
+
+
+            screen.classList
+              .remove(
+                "active"
+              );
+
+          }
+
+        );
+
+
+
+      getElement(
+        screenId
+      )
+        .classList
+        .add(
+          "active"
+        );
+
+
+
+      document
+
+        .querySelectorAll(
+          ".nav button"
+        )
+
+        .forEach(
+
+          function(button) {
+
+
+            button.classList.toggle(
+
+              "active",
+
+              button.dataset.screen ===
+                screenId
+
+            );
+
+          }
+
+        );
+
+
+
+      getElement(
+        "pageTitle"
+      ).textContent =
+
+        title;
+
+
+
+      if (
+        screenId !==
+        "inputScreen"
+      ) {
+
+
+        loadData()
+
+          .catch(
+            function() {}
+          );
+
+      }
+
+    }
+
+
+
+    /* =====================================================
+       30. EVENT UTAMA
+    ====================================================== */
+
+    function bindMainEvents() {
+
+
+      getElement(
+        "roll"
+      )
+        .addEventListener(
+
+          "input",
+
+          calculateTotalProduction
+
+        );
+
+
+
+      getElement(
+        "berat"
+      )
+        .addEventListener(
+
+          "input",
+
+          calculateTotalProduction
+
+        );
+
+
+
+      getElement(
+        "saveBtn"
+      )
+        .addEventListener(
+
+          "click",
+
+          saveProductionData
+
+        );
+
+
+
+      getElement(
+        "reload1"
+      )
+        .addEventListener(
+
+          "click",
+
+          function() {
+
+
+            loadData()
+
+              .catch(
+                function() {}
+              );
+
+          }
+
+        );
+
+
+
+      getElement(
+        "reload2"
+      )
+        .addEventListener(
+
+          "click",
+
+          function() {
+
+
+            loadData()
+
+              .catch(
+                function() {}
+              );
+
+          }
+
+        );
+
+
+
+      document
+
+        .querySelectorAll(
+          ".nav button"
+        )
+
+        .forEach(
+
+          function(button) {
+
+
+            button.addEventListener(
+
+              "click",
+
+              function() {
+
+
+                openScreen(
+
+                  button.dataset.screen,
+
+                  button.dataset.title
+
+                );
+
+              }
+
+            );
+
+          }
+
+        );
+
+    }
+
+
+
+    /* =====================================================
+       31. SERVICE WORKER / PWA
+    ====================================================== */
+
+    function registerServiceWorker() {
+
+
+      if (
+
+        !(
+          "serviceWorker"
+          in navigator
+        )
+
+      ) {
+
+
+        return;
+
+      }
+
+
+
+      window.addEventListener(
+
+        "load",
+
+        function() {
+
+
+          navigator
+            .serviceWorker
+            .register(
+
+              "./service-worker.js"
+
+            )
+
+            .catch(
+
+              function() {}
+
+            );
+
+        }
+
+      );
+
+    }
+
+
+
+    /* =====================================================
+       32. INITIALIZE APLIKASI
+    ====================================================== */
+
+    function initializeApplication() {
+
+
+      /* BUAT DAFTAR MESIN */
+
+      setupMachineOptions();
+
+      /* BUAT SHIFT & STATUS */
+
+      setupChoiceButtons();
+
+      /* TANGGAL HARI INI */
+
+      getElement(
+        "tanggal"
+      ).value =
+
+        getToday();
+
+      /* AMBIL NAMA TERAKHIR */
+
+      getElement(
+        "penginput"
+      ).value =
+
+        localStorage.getItem(
+
+          "nama_penginput"
+
+        )
+
+        ||
+
+        "";
+
+      /* AKTIFKAN EVENT */
+
+      bindMainEvents();
+
+      /* TAMPILKAN DATA AWAL */
+
+      renderAllData();
+
+      /* AMBIL GOOGLE SHEETS */
+
+      loadData()
+
         .catch(
           function() {}
         );
 
+      /* AKTIFKAN PWA */
+
+      registerServiceWorker();
+
     }
-  );
 
-}
+    /* =====================================================
+       33. JALANKAN APLIKASI
+    ====================================================== */
 
-
-/* =========================================================
-   32. INITIALIZE APLIKASI
-   ========================================================= */
-
-function initializeApplication() {
-
-  /* Buat daftar mesin */
-
-  setupMachineOptions();
+    initializeApplication();
 
 
-  /* Buat Shift & Status */
-
-  setupChoiceButtons();
+  </script>
 
 
-  /* Tanggal otomatis */
+</body>
 
-  getElement(
-    "tanggal"
-  ).value =
-    getToday();
-
-
-  /* Ambil nama terakhir */
-
-  getElement(
-    "penginput"
-  ).value =
-
-    localStorage
-      .getItem(
-        "nama_penginput"
-      ) ||
-
-    "";
-
-
-  /* Event */
-
-  bindMainEvents();
-
-
-  /* Tampilkan data awal */
-
-  renderAllData();
-
-
-  /* Ambil data Google Sheets */
-
-  loadData()
-    .catch(
-      function() {}
-    );
-
-
-  /* Aktifkan PWA */
-
-  registerServiceWorker();
-
-}
-
-
-/* =========================================================
-   33. JALANKAN APLIKASI
-   ========================================================= */
-
-initializeApplication();
-
-</script>
+</html>
