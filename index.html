@@ -1,239 +1,1617 @@
-<!doctype html>
-<html lang="id">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b6ee6">
-<link rel="manifest" href="manifest.webmanifest">
-<title>Produksi Tekstil</title>
-<style>
-:root{--blue:#0b6ee6;--bg:#f4f7fb;--card:#fff;--border:#dce3ec;--text:#1f2937;--muted:#6b7280;--green:#2fa84f;--orange:#e39a16;--red:#d33b32}
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
-.app{max-width:520px;margin:auto;min-height:100vh;padding-bottom:78px}
-header{background:linear-gradient(135deg,#0d7bf0,#0758bc);color:#fff;padding:20px 24px;position:sticky;top:0;z-index:5}
-header h1{margin:0;font-size:22px}header p{margin:5px 0 0;opacity:.92}.online{font-size:12px;margin-top:8px}
-.screen{display:none;padding:16px}.screen.active{display:block}
-.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:0 2px 8px #0000000d}
-.field{margin-bottom:15px}label{display:block;font-weight:700;margin-bottom:7px}
-input,select,textarea{width:100%;border:1px solid var(--border);border-radius:12px;padding:13px 14px;font-size:16px;background:#fff}
-textarea{min-height:86px;resize:vertical}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.choice{border:1px solid var(--border);border-radius:12px;background:#fff;padding:12px 5px;font-size:14px}
-.choice.active{border-color:var(--blue);color:var(--blue);background:#eaf4ff;font-weight:700}
-.status .choice[data-value="Berjalan"].active{border-color:var(--green);color:var(--green);background:#e9f8ed}
-.status .choice[data-value="Perbaikan"].active{border-color:var(--orange);color:#9a6400;background:#fff5df}
-.status .choice[data-value="Berhenti"].active{border-color:var(--red);color:var(--red);background:#fdebea}
-.total{display:flex;justify-content:space-between;align-items:center;background:#eaf3ff;border-radius:12px;padding:15px;margin:4px 0 17px}
-.total strong{font-size:25px;color:var(--blue)}
-.btn{width:100%;border:0;border-radius:12px;background:var(--blue);color:#fff;padding:14px;font-size:17px;font-weight:700}
-.btn:disabled{opacity:.55}.note{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.5}
-.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:520px;width:100%;height:70px;background:#fff;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(3,1fr);z-index:10}
-.nav button{border:0;background:#fff;color:var(--muted);font-weight:700}.nav button.active{color:var(--blue)}.nav span{display:block;font-size:23px}
-.kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}.kpi{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px}.kpi small{color:var(--muted)}.kpi b{display:block;font-size:23px;margin-top:5px}
-.item{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px}.itemtop{display:flex;justify-content:space-between;gap:8px}.meta{font-size:12px;color:var(--muted);margin-top:5px}
-.badge{display:inline-block;font-size:11px;border-radius:999px;padding:5px 8px;background:#edf2f7;margin:8px 5px 0 0}.green{background:#e9f8ed;color:#208d3d}.orange{background:#fff5df;color:#966100}.red{background:#fdebea;color:#c83129}
-.empty{text-align:center;color:var(--muted);padding:30px}.reload{border:0;background:#eaf3ff;color:var(--blue);border-radius:10px;padding:10px 12px;font-weight:700;margin-bottom:12px}
-@media(max-width:380px){.grid,.choices{grid-template-columns:1fr}}
-</style>
-</head>
-<body>
-<div class="app">
-<header>
-<h1 id="pageTitle">Input Produksi</h1>
-<p>Data bersama · Google Sheets</p>
-<div id="connection" class="online">Menghubungkan ke Google Sheets...</div>
-</header>
-
-<section id="inputScreen" class="screen active">
-<div class="card">
-  <div class="field"><label>Nama Penginput</label><input id="penginput" placeholder="Contoh: Imanuel"></div>
-  <div class="field"><label>Tanggal</label><input id="tanggal" type="date"></div>
-  <div class="grid">
-    <div class="field"><label>Mesin</label><select id="mesin"><option>Mesin 1</option><option>Mesin 2</option><option>Mesin 3</option><option>Mesin 4</option><option>Mesin 5</option></select></div>
-    <div class="field"><label>Jenis Kain</label><input id="kain" placeholder="Contoh: RIB"></div>
-  </div>
-  <div class="field"><label>Shift</label><div class="choices" id="shiftChoices">
-    <button type="button" class="choice active" data-value="Pagi">Pagi</button>
-    <button type="button" class="choice" data-value="Siang">Siang</button>
-    <button type="button" class="choice" data-value="Malam">Malam</button>
-  </div></div>
-  <div class="grid">
-    <div class="field"><label>Jumlah Roll</label><input id="roll" type="number" min="0" inputmode="numeric"></div>
-    <div class="field"><label>Berat/Roll (kg)</label><input id="berat" type="number" min="0" step="0.1" inputmode="decimal"></div>
-  </div>
-  <div class="total"><span>Total Produksi</span><strong id="total">0 kg</strong></div>
-  <div class="field"><label>Status Mesin</label><div class="choices status" id="statusChoices">
-    <button type="button" class="choice active" data-value="Berjalan">Berjalan</button>
-    <button type="button" class="choice" data-value="Perbaikan">Perbaikan</button>
-    <button type="button" class="choice" data-value="Berhenti">Berhenti</button>
-  </div></div>
-  <div class="field"><label>Kendala</label><textarea id="kendala" placeholder="Kosongkan jika tidak ada"></textarea></div>
-  <button type="button" class="btn" id="saveBtn">💾 Simpan ke Google Sheets</button>
-  <div class="note">Semua HP yang memakai aplikasi ini akan membaca data dari Google Sheets yang sama.</div>
-</div>
-</section>
-
-<section id="rekapScreen" class="screen">
-<button class="reload" id="reload1">↻ Muat ulang data</button>
-<div class="kpis">
-  <div class="kpi"><small>Total Produksi</small><b id="rekapKg">0 kg</b></div>
-  <div class="kpi"><small>Total Roll</small><b id="rekapRoll">0</b></div>
-</div>
-<div class="kpis">
-  <div class="kpi"><small>Jumlah Data</small><b id="rekapData">0</b></div>
-  <div class="kpi"><small>Status Berjalan</small><b id="rekapJalan">0</b></div>
-</div>
-<div class="card"><b>Produksi per Shift</b><div id="shiftSummary" class="note" style="font-size:15px;line-height:1.8;margin-top:12px"></div></div>
-</section>
-
-<section id="riwayatScreen" class="screen">
-<button class="reload" id="reload2">↻ Muat ulang data</button>
-<div id="riwayatList"></div>
-</section>
-</div>
-
-<nav class="nav">
-<button type="button" class="active" data-screen="inputScreen" data-title="Input Produksi"><span>📝</span>Input</button>
-<button type="button" data-screen="rekapScreen" data-title="Rekap Produksi"><span>📊</span>Rekap</button>
-<button type="button" data-screen="riwayatScreen" data-title="Riwayat Bersama"><span>📚</span>Riwayat</button>
-</nav>
-
 <script>
-(function(){
-"use strict";
+/* =========================================================
+   PRODUKSI TEKSTIL
+   JAVASCRIPT VERSI RAPI - PER FUNGSI
+   ========================================================= */
 
-var API_URL = "https://script.google.com/macros/s/AKfycbwiJKc4yLIFkyX6RRsFbAi4q0VUY6eHMHjbdABJLXpMvrgJNXW2T4MONau2RunulQAB/exec";
-var sharedData=[], selectedShift="Pagi", selectedStatus="Berjalan";
-function $(id){return document.getElementById(id)}
-function today(){var d=new Date(),o=d.getTimezoneOffset();return new Date(d.getTime()-o*60000).toISOString().slice(0,10)}
 
-$("tanggal").value=today();
-$("penginput").value=localStorage.getItem("nama_penginput")||"";
+/* =========================================================
+   1. KONFIGURASI
+   BAGIAN INI YANG PALING MUDAH DIUBAH
+   ========================================================= */
 
-function setChoice(id,val){document.querySelectorAll("#"+id+" .choice").forEach(function(b){b.classList.toggle("active",b.dataset.value===val)})}
-document.querySelectorAll("#shiftChoices .choice").forEach(function(b){b.onclick=function(){selectedShift=b.dataset.value;setChoice("shiftChoices",selectedShift)}})
-document.querySelectorAll("#statusChoices .choice").forEach(function(b){b.onclick=function(){selectedStatus=b.dataset.value;setChoice("statusChoices",selectedStatus)}})
+const CONFIG = {
 
-function calc(){var r=Number($("roll").value||0),w=Number($("berat").value||0);$("total").textContent=(r*w).toLocaleString("id-ID")+" kg"}
-$("roll").addEventListener("input",calc);$("berat").addEventListener("input",calc);
+  appName: "Produksi Tekstil",
 
-function uid(){return (window.crypto&&crypto.randomUUID)?crypto.randomUUID():(Date.now()+"-"+Math.random().toString(36).slice(2))}
+  apiUrl:
+    "https://script.google.com/macros/s/AKfycbwiJKc4yLIFkyX6RRsFbAi4q0VUY6eHMHjbdABJLXpMvrgJNXW2T4MONau2RunulQAB/exec",
 
-function jsonp(params){
-  return new Promise(function(resolve,reject){
-    var cb="cb_"+Date.now()+"_"+Math.random().toString(36).slice(2);
-    var script=document.createElement("script");
-    var timer=setTimeout(function(){cleanup();reject(new Error("Waktu koneksi habis"))},15000);
-    function cleanup(){clearTimeout(timer);delete window[cb];if(script.parentNode)script.parentNode.removeChild(script)}
-    window[cb]=function(result){cleanup();resolve(result)};
-    params.callback=cb; params.t=Date.now();
-    var qs=Object.keys(params).map(function(k){return encodeURIComponent(k)+"="+encodeURIComponent(params[k])}).join("&");
-    script.src=API_URL+"?"+qs;
-    script.onerror=function(){cleanup();reject(new Error("Gagal membaca data"))};
-    document.body.appendChild(script);
-  })
+  machines: [
+    "Mesin 1",
+    "Mesin 2",
+    "Mesin 3",
+    "Mesin 4",
+    "Mesin 5"
+  ],
+
+  shifts: [
+    "Pagi",
+    "Siang",
+    "Malam"
+  ],
+
+  statuses: [
+    "Berjalan",
+    "Perbaikan",
+    "Berhenti"
+  ],
+
+  defaultShift: "Pagi",
+
+  defaultStatus: "Berjalan"
+
+};
+
+
+/* =========================================================
+   2. STATE / DATA SEMENTARA
+   ========================================================= */
+
+let sharedData = [];
+
+let selectedShift =
+  CONFIG.defaultShift;
+
+let selectedStatus =
+  CONFIG.defaultStatus;
+
+
+/* =========================================================
+   3. HELPER - AMBIL ELEMENT HTML
+   ========================================================= */
+
+function getElement(id) {
+
+  return document.getElementById(id);
+
 }
 
-function loadData(){
-  $("connection").textContent="Memuat data bersama...";
-  return jsonp({action:"list"}).then(function(res){
-    if(!res || res.ok===false) throw new Error((res&&res.message)||"Respons tidak valid");
-    sharedData=res.data||[];
-    $("connection").textContent="Terhubung ✓ · "+sharedData.length+" data bersama";
-    renderAll();
+
+/* =========================================================
+   4. HELPER - TANGGAL HARI INI
+   ========================================================= */
+
+function getToday() {
+
+  const date =
+    new Date();
+
+  const offset =
+    date.getTimezoneOffset();
+
+  return new Date(
+    date.getTime() -
+    offset * 60000
+  )
+    .toISOString()
+    .slice(0, 10);
+
+}
+
+
+/* =========================================================
+   5. HELPER - BUAT ID UNIK
+   ========================================================= */
+
+function generateId() {
+
+  if (
+    window.crypto &&
+    crypto.randomUUID
+  ) {
+
+    return crypto.randomUUID();
+
+  }
+
+  return (
+    Date.now() +
+    "-" +
+    Math.random()
+      .toString(36)
+      .slice(2)
+  );
+
+}
+
+
+/* =========================================================
+   6. HELPER - AMANKAN TEXT HTML
+   ========================================================= */
+
+function escapeHtml(value) {
+
+  return String(value || "")
+    .replace(
+      /[&<>"']/g,
+      function(character) {
+
+        const map = {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;"
+        };
+
+        return map[character];
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   7. HELPER - DELAY
+   ========================================================= */
+
+function delay(ms) {
+
+  return new Promise(
+    function(resolve) {
+
+      setTimeout(
+        resolve,
+        ms
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   8. SETUP DAFTAR MESIN
+   ========================================================= */
+
+function setupMachineOptions() {
+
+  const machineSelect =
+    getElement("mesin");
+
+  machineSelect.innerHTML =
+    CONFIG.machines
+      .map(
+        function(machine) {
+
+          return `
+            <option value="${escapeHtml(machine)}">
+              ${escapeHtml(machine)}
+            </option>
+          `;
+
+        }
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   9. MEMBUAT BUTTON PILIHAN
+   Digunakan untuk Shift dan Status Mesin
+   ========================================================= */
+
+function createChoiceButtons(
+  containerId,
+  values,
+  activeValue
+) {
+
+  const container =
+    getElement(containerId);
+
+  container.innerHTML =
+    values
+      .map(
+        function(value) {
+
+          const activeClass =
+            value === activeValue
+              ? " active"
+              : "";
+
+          return `
+            <button
+              type="button"
+              class="choice${activeClass}"
+              data-value="${escapeHtml(value)}"
+            >
+              ${escapeHtml(value)}
+            </button>
+          `;
+
+        }
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   10. SETUP SHIFT DAN STATUS
+   ========================================================= */
+
+function setupChoiceButtons() {
+
+  createChoiceButtons(
+    "shiftChoices",
+    CONFIG.shifts,
+    selectedShift
+  );
+
+  createChoiceButtons(
+    "statusChoices",
+    CONFIG.statuses,
+    selectedStatus
+  );
+
+  bindChoiceEvents();
+
+}
+
+
+/* =========================================================
+   11. MENGAKTIFKAN PILIHAN
+   ========================================================= */
+
+function setActiveChoice(
+  containerId,
+  selectedValue
+) {
+
+  document
+    .querySelectorAll(
+      "#" +
+      containerId +
+      " .choice"
+    )
+    .forEach(
+      function(button) {
+
+        button.classList.toggle(
+          "active",
+          button.dataset.value ===
+            selectedValue
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   12. EVENT SHIFT DAN STATUS
+   ========================================================= */
+
+function bindChoiceEvents() {
+
+  document
+    .querySelectorAll(
+      "#shiftChoices .choice"
+    )
+    .forEach(
+      function(button) {
+
+        button.addEventListener(
+          "click",
+          function() {
+
+            selectedShift =
+              button.dataset.value;
+
+            setActiveChoice(
+              "shiftChoices",
+              selectedShift
+            );
+
+          }
+        );
+
+      }
+    );
+
+
+  document
+    .querySelectorAll(
+      "#statusChoices .choice"
+    )
+    .forEach(
+      function(button) {
+
+        button.addEventListener(
+          "click",
+          function() {
+
+            selectedStatus =
+              button.dataset.value;
+
+            setActiveChoice(
+              "statusChoices",
+              selectedStatus
+            );
+
+          }
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   13. HITUNG TOTAL PRODUKSI
+   Total = Jumlah Roll × Berat/Roll
+   ========================================================= */
+
+function calculateTotalProduction() {
+
+  const roll =
+    Number(
+      getElement("roll").value ||
+      0
+    );
+
+  const weight =
+    Number(
+      getElement("berat").value ||
+      0
+    );
+
+  const total =
+    roll * weight;
+
+  getElement("total")
+    .textContent =
+    total.toLocaleString(
+      "id-ID"
+    ) +
+    " kg";
+
+}
+
+
+/* =========================================================
+   14. JSONP
+   Digunakan untuk membaca Google Sheets
+   ========================================================= */
+
+function requestJsonp(params) {
+
+  return new Promise(
+    function(resolve, reject) {
+
+      const callbackName =
+        "callback_" +
+        Date.now() +
+        "_" +
+        Math.random()
+          .toString(36)
+          .slice(2);
+
+
+      const script =
+        document.createElement(
+          "script"
+        );
+
+
+      const timeout =
+        setTimeout(
+          function() {
+
+            cleanup();
+
+            reject(
+              new Error(
+                "Waktu koneksi habis"
+              )
+            );
+
+          },
+          15000
+        );
+
+
+      function cleanup() {
+
+        clearTimeout(
+          timeout
+        );
+
+        delete window[
+          callbackName
+        ];
+
+        if (
+          script.parentNode
+        ) {
+
+          script.parentNode
+            .removeChild(
+              script
+            );
+
+        }
+
+      }
+
+
+      window[
+        callbackName
+      ] =
+        function(result) {
+
+          cleanup();
+
+          resolve(
+            result
+          );
+
+        };
+
+
+      params.callback =
+        callbackName;
+
+      params.t =
+        Date.now();
+
+
+      const queryString =
+        Object
+          .keys(params)
+          .map(
+            function(key) {
+
+              return (
+                encodeURIComponent(
+                  key
+                ) +
+                "=" +
+                encodeURIComponent(
+                  params[key]
+                )
+              );
+
+            }
+          )
+          .join("&");
+
+
+      script.src =
+        CONFIG.apiUrl +
+        "?" +
+        queryString;
+
+
+      script.onerror =
+        function() {
+
+          cleanup();
+
+          reject(
+            new Error(
+              "Gagal membaca data"
+            )
+          );
+
+        };
+
+
+      document.body
+        .appendChild(
+          script
+        );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   15. LOAD DATA DARI GOOGLE SHEETS
+   ========================================================= */
+
+async function loadData() {
+
+  const connection =
+    getElement(
+      "connection"
+    );
+
+
+  connection.textContent =
+    "Memuat data bersama...";
+
+
+  try {
+
+    const response =
+      await requestJsonp({
+        action: "list"
+      });
+
+
+    if (
+      !response ||
+      response.ok === false
+    ) {
+
+      throw new Error(
+        (
+          response &&
+          response.message
+        ) ||
+        "Respons tidak valid"
+      );
+
+    }
+
+
+    sharedData =
+      response.data || [];
+
+
+    connection.textContent =
+      "Terhubung ✓ · " +
+      sharedData.length +
+      " data bersama";
+
+
+    renderAllData();
+
+
     return sharedData;
-  }).catch(function(err){
-    $("connection").textContent="Koneksi gagal: "+err.message;
-    throw err;
-  })
+
+  }
+
+  catch(error) {
+
+    connection.textContent =
+      "Koneksi gagal: " +
+      error.message;
+
+    throw error;
+
+  }
+
 }
 
-function save(){
-  var nama=$("penginput").value.trim(), roll=Number($("roll").value||0), berat=Number($("berat").value||0);
-  if(!nama){alert("Isi Nama Penginput.");return}
-  if(roll<=0||berat<=0){alert("Isi Jumlah Roll dan Berat/Roll.");return}
-  localStorage.setItem("nama_penginput",nama);
 
-  var id=uid();
-  var payload={
-    id:id,tanggal:$("tanggal").value,mesin:$("mesin").value,shift:selectedShift,
-    jenisKain:$("kain").value.trim()||"-",jumlahRoll:roll,beratRoll:berat,
-    status:selectedStatus,kendala:$("kendala").value.trim()||"-",penginput:nama
+/* =========================================================
+   16. VALIDASI FORM
+   ========================================================= */
+
+function validateForm() {
+
+  const name =
+    getElement(
+      "penginput"
+    )
+      .value
+      .trim();
+
+
+  const roll =
+    Number(
+      getElement(
+        "roll"
+      ).value || 0
+    );
+
+
+  const weight =
+    Number(
+      getElement(
+        "berat"
+      ).value || 0
+    );
+
+
+  if (!name) {
+
+    return {
+      valid: false,
+      message:
+        "Isi Nama Penginput."
+    };
+
+  }
+
+
+  if (roll <= 0) {
+
+    return {
+      valid: false,
+      message:
+        "Jumlah Roll harus lebih dari 0."
+    };
+
+  }
+
+
+  if (weight <= 0) {
+
+    return {
+      valid: false,
+      message:
+        "Berat/Roll harus lebih dari 0."
+    };
+
+  }
+
+
+  return {
+    valid: true
   };
 
-  $("saveBtn").disabled=true;
-  $("saveBtn").textContent="Mengirim...";
+}
 
-  fetch(API_URL,{
-    method:"POST",
-    mode:"no-cors",
-    headers:{"Content-Type":"text/plain;charset=utf-8"},
-    body:JSON.stringify(payload)
-  }).then(function(){
-    setTimeout(function(){
-      loadData().then(function(rows){
-        var ada=rows.some(function(r){return r.id===id});
-        if(ada){alert("Data berhasil masuk ke Google Sheets.");resetForm()}
-        else{alert("Data sudah dikirim. Tekan Muat ulang jika belum terlihat.");}
-      }).catch(function(){alert("Data sudah dikirim, tetapi riwayat belum bisa dimuat.")})
-      .finally(function(){
-        $("saveBtn").disabled=false;
-        $("saveBtn").textContent="💾 Simpan ke Google Sheets";
-      })
-    },1600)
-  }).catch(function(){
-    $("saveBtn").disabled=false;
-    $("saveBtn").textContent="💾 Simpan ke Google Sheets";
-    alert("Gagal mengirim data. Periksa internet.");
-  })
-}
-$("saveBtn").onclick=save;
 
-function resetForm(){
-  $("tanggal").value=today();$("mesin").value="Mesin 1";$("kain").value="";$("roll").value="";$("berat").value="";$("kendala").value="";
-  selectedShift="Pagi";selectedStatus="Berjalan";setChoice("shiftChoices",selectedShift);setChoice("statusChoices",selectedStatus);calc()
-}
-function cls(s){return s==="Berjalan"?"green":s==="Perbaikan"?"orange":"red"}
-function safe(s){return String(s||"").replace(/[&<>"']/g,function(c){return({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]})}
-function renderHistory(){
-  var box=$("riwayatList");
-  if(!sharedData.length){box.innerHTML='<div class="empty">Belum ada data bersama.</div>';return}
-  box.innerHTML=sharedData.map(function(r){
-    return '<div class="item"><div class="itemtop"><div><b>'+safe(r.tanggal)+' · '+safe(r.shift)+'</b><div class="meta">'+safe(r.mesin)+' · '+safe(r.jenisKain)+' · oleh '+safe(r.penginput)+'</div></div><span class="badge '+cls(r.status)+'">'+safe(r.status)+'</span></div><span class="badge">'+r.jumlahRoll+' roll</span><span class="badge">'+r.totalKg+' kg</span><span class="badge">Kendala: '+safe(r.kendala)+'</span></div>'
-  }).join("")
-}
-function renderRecap(){
-  var kg=sharedData.reduce(function(s,r){return s+Number(r.totalKg||0)},0);
-  var ro=sharedData.reduce(function(s,r){return s+Number(r.jumlahRoll||0)},0);
-  $("rekapKg").textContent=kg.toLocaleString("id-ID")+" kg";
-  $("rekapRoll").textContent=ro;
-  $("rekapData").textContent=sharedData.length;
-  $("rekapJalan").textContent=sharedData.filter(function(r){return r.status==="Berjalan"}).length;
-  var sh={Pagi:0,Siang:0,Malam:0};
-  sharedData.forEach(function(r){if(sh[r.shift]!==undefined)sh[r.shift]+=Number(r.totalKg||0)});
-  $("shiftSummary").innerHTML="Pagi: <b>"+sh.Pagi+" kg</b><br>Siang: <b>"+sh.Siang+" kg</b><br>Malam: <b>"+sh.Malam+" kg</b>"
-}
-function renderAll(){renderHistory();renderRecap()}
-function openScreen(id,title){
-  document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active")});
-  $(id).classList.add("active");
-  document.querySelectorAll(".nav button").forEach(function(b){b.classList.toggle("active",b.dataset.screen===id)});
-  $("pageTitle").textContent=title;
-  if(id!=="inputScreen")loadData().catch(function(){});
-}
-document.querySelectorAll(".nav button").forEach(function(b){b.onclick=function(){openScreen(b.dataset.screen,b.dataset.title)}})
-$("reload1").onclick=function(){loadData().catch(function(){})};
-$("reload2").onclick=function(){loadData().catch(function(){})};
+/* =========================================================
+   17. MEMBUAT DATA PRODUKSI
+   ========================================================= */
 
-renderAll();
-loadData().catch(function(){});
+function createProductionPayload(
+  recordId
+) {
 
-if("serviceWorker" in navigator){
-  window.addEventListener("load",function(){
-    navigator.serviceWorker.register("./service-worker.js").catch(function(){})
-  })
+  return {
+
+    id:
+      recordId,
+
+    tanggal:
+      getElement(
+        "tanggal"
+      ).value,
+
+    mesin:
+      getElement(
+        "mesin"
+      ).value,
+
+    shift:
+      selectedShift,
+
+    jenisKain:
+      getElement(
+        "kain"
+      )
+        .value
+        .trim() ||
+      "-",
+
+    jumlahRoll:
+      Number(
+        getElement(
+          "roll"
+        ).value || 0
+      ),
+
+    beratRoll:
+      Number(
+        getElement(
+          "berat"
+        ).value || 0
+      ),
+
+    status:
+      selectedStatus,
+
+    kendala:
+      getElement(
+        "kendala"
+      )
+        .value
+        .trim() ||
+      "-",
+
+    penginput:
+      getElement(
+        "penginput"
+      )
+        .value
+        .trim()
+
+  };
+
 }
-})();
+
+
+/* =========================================================
+   18. STATUS TOMBOL SIMPAN
+   ========================================================= */
+
+function setSaveButtonLoading(
+  isLoading
+) {
+
+  const button =
+    getElement(
+      "saveBtn"
+    );
+
+
+  button.disabled =
+    isLoading;
+
+
+  button.textContent =
+    isLoading
+      ? "Mengirim..."
+      : "💾 Simpan ke Google Sheets";
+
+}
+
+
+/* =========================================================
+   19. SIMPAN DATA KE GOOGLE SHEETS
+   ========================================================= */
+
+async function saveProductionData() {
+
+  const validation =
+    validateForm();
+
+
+  if (
+    !validation.valid
+  ) {
+
+    alert(
+      validation.message
+    );
+
+    return;
+
+  }
+
+
+  const inputName =
+    getElement(
+      "penginput"
+    )
+      .value
+      .trim();
+
+
+  localStorage.setItem(
+    "nama_penginput",
+    inputName
+  );
+
+
+  const recordId =
+    generateId();
+
+
+  const payload =
+    createProductionPayload(
+      recordId
+    );
+
+
+  setSaveButtonLoading(
+    true
+  );
+
+
+  try {
+
+    await fetch(
+      CONFIG.apiUrl,
+      {
+
+        method:
+          "POST",
+
+        mode:
+          "no-cors",
+
+        headers: {
+
+          "Content-Type":
+            "text/plain;charset=utf-8"
+
+        },
+
+        body:
+          JSON.stringify(
+            payload
+          )
+
+      }
+    );
+
+
+    await delay(
+      1600
+    );
+
+
+    const rows =
+      await loadData();
+
+
+    const dataExists =
+      rows.some(
+        function(row) {
+
+          return (
+            row.id ===
+            recordId
+          );
+
+        }
+      );
+
+
+    if (dataExists) {
+
+      alert(
+        "Data berhasil masuk ke Google Sheets."
+      );
+
+      resetForm();
+
+    }
+
+    else {
+
+      alert(
+        "Data sudah dikirim. Tekan Muat ulang jika belum terlihat."
+      );
+
+    }
+
+  }
+
+  catch(error) {
+
+    alert(
+      "Gagal mengirim data. Periksa internet."
+    );
+
+  }
+
+  finally {
+
+    setSaveButtonLoading(
+      false
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   20. RESET FORM
+   ========================================================= */
+
+function resetForm() {
+
+  getElement(
+    "tanggal"
+  ).value =
+    getToday();
+
+
+  if (
+    CONFIG.machines.length >
+    0
+  ) {
+
+    getElement(
+      "mesin"
+    ).value =
+      CONFIG.machines[0];
+
+  }
+
+
+  getElement(
+    "kain"
+  ).value =
+    "";
+
+
+  getElement(
+    "roll"
+  ).value =
+    "";
+
+
+  getElement(
+    "berat"
+  ).value =
+    "";
+
+
+  getElement(
+    "kendala"
+  ).value =
+    "";
+
+
+  selectedShift =
+    CONFIG.defaultShift;
+
+
+  selectedStatus =
+    CONFIG.defaultStatus;
+
+
+  setActiveChoice(
+    "shiftChoices",
+    selectedShift
+  );
+
+
+  setActiveChoice(
+    "statusChoices",
+    selectedStatus
+  );
+
+
+  calculateTotalProduction();
+
+}
+
+
+/* =========================================================
+   21. WARNA STATUS
+   ========================================================= */
+
+function getStatusClass(
+  status
+) {
+
+  if (
+    status ===
+    "Berjalan"
+  ) {
+
+    return "green";
+
+  }
+
+
+  if (
+    status ===
+    "Perbaikan"
+  ) {
+
+    return "orange";
+
+  }
+
+
+  return "red";
+
+}
+
+
+/* =========================================================
+   22. TAMPILKAN RIWAYAT
+   ========================================================= */
+
+function renderHistory() {
+
+  const container =
+    getElement(
+      "riwayatList"
+    );
+
+
+  if (
+    sharedData.length ===
+    0
+  ) {
+
+    container.innerHTML =
+
+      '<div class="empty">' +
+
+      "Belum ada data bersama." +
+
+      "</div>";
+
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+
+    sharedData
+
+      .map(
+        function(record) {
+
+          return `
+
+            <div class="item">
+
+              <div class="itemtop">
+
+                <div>
+
+                  <b>
+                    ${escapeHtml(record.tanggal)}
+                    ·
+                    ${escapeHtml(record.shift)}
+                  </b>
+
+                  <div class="meta">
+
+                    ${escapeHtml(record.mesin)}
+                    ·
+                    ${escapeHtml(record.jenisKain)}
+                    · oleh
+                    ${escapeHtml(record.penginput)}
+
+                  </div>
+
+                </div>
+
+
+                <span
+                  class="badge ${getStatusClass(record.status)}"
+                >
+
+                  ${escapeHtml(record.status)}
+
+                </span>
+
+              </div>
+
+
+              <span class="badge">
+
+                ${record.jumlahRoll}
+                roll
+
+              </span>
+
+
+              <span class="badge">
+
+                ${record.totalKg}
+                kg
+
+              </span>
+
+
+              <span class="badge">
+
+                Kendala:
+                ${escapeHtml(record.kendala)}
+
+              </span>
+
+            </div>
+
+          `;
+
+        }
+      )
+
+      .join("");
+
+}
+
+
+/* =========================================================
+   23. HITUNG TOTAL KG
+   ========================================================= */
+
+function calculateTotalKg() {
+
+  return sharedData
+    .reduce(
+      function(
+        total,
+        record
+      ) {
+
+        return (
+          total +
+          Number(
+            record.totalKg ||
+            0
+          )
+        );
+
+      },
+      0
+    );
+
+}
+
+
+/* =========================================================
+   24. HITUNG TOTAL ROLL
+   ========================================================= */
+
+function calculateTotalRoll() {
+
+  return sharedData
+    .reduce(
+      function(
+        total,
+        record
+      ) {
+
+        return (
+          total +
+          Number(
+            record.jumlahRoll ||
+            0
+          )
+        );
+
+      },
+      0
+    );
+
+}
+
+
+/* =========================================================
+   25. HITUNG STATUS BERJALAN
+   ========================================================= */
+
+function countRunningMachines() {
+
+  return sharedData
+    .filter(
+      function(record) {
+
+        return (
+          record.status ===
+          "Berjalan"
+        );
+
+      }
+    )
+    .length;
+
+}
+
+
+/* =========================================================
+   26. HITUNG PRODUKSI PER SHIFT
+   ========================================================= */
+
+function calculateProductionPerShift() {
+
+  const result = {};
+
+
+  CONFIG.shifts
+    .forEach(
+      function(shift) {
+
+        result[shift] =
+          0;
+
+      }
+    );
+
+
+  sharedData
+    .forEach(
+      function(record) {
+
+        if (
+          result[
+            record.shift
+          ] !== undefined
+        ) {
+
+          result[
+            record.shift
+          ] +=
+            Number(
+              record.totalKg ||
+              0
+            );
+
+        }
+
+      }
+    );
+
+
+  return result;
+
+}
+
+
+/* =========================================================
+   27. TAMPILKAN REKAP
+   ========================================================= */
+
+function renderRecap() {
+
+  const totalKg =
+    calculateTotalKg();
+
+
+  const totalRoll =
+    calculateTotalRoll();
+
+
+  const running =
+    countRunningMachines();
+
+
+  const productionPerShift =
+    calculateProductionPerShift();
+
+
+  getElement(
+    "rekapKg"
+  ).textContent =
+
+    totalKg
+      .toLocaleString(
+        "id-ID"
+      ) +
+
+    " kg";
+
+
+  getElement(
+    "rekapRoll"
+  ).textContent =
+
+    totalRoll;
+
+
+  getElement(
+    "rekapData"
+  ).textContent =
+
+    sharedData.length;
+
+
+  getElement(
+    "rekapJalan"
+  ).textContent =
+
+    running;
+
+
+  getElement(
+    "shiftSummary"
+  ).innerHTML =
+
+    CONFIG.shifts
+
+      .map(
+        function(shift) {
+
+          return (
+
+            escapeHtml(
+              shift
+            ) +
+
+            ": <b>" +
+
+            productionPerShift[
+              shift
+            ] +
+
+            " kg</b>"
+
+          );
+
+        }
+      )
+
+      .join("<br>");
+
+}
+
+
+/* =========================================================
+   28. RENDER SEMUA
+   ========================================================= */
+
+function renderAllData() {
+
+  renderHistory();
+
+  renderRecap();
+
+}
+
+
+/* =========================================================
+   29. NAVIGASI HALAMAN
+   ========================================================= */
+
+function openScreen(
+  screenId,
+  title
+) {
+
+  document
+    .querySelectorAll(
+      ".screen"
+    )
+    .forEach(
+      function(screen) {
+
+        screen.classList
+          .remove(
+            "active"
+          );
+
+      }
+    );
+
+
+  getElement(
+    screenId
+  )
+    .classList
+    .add(
+      "active"
+    );
+
+
+  document
+    .querySelectorAll(
+      ".nav button"
+    )
+    .forEach(
+      function(button) {
+
+        button.classList
+          .toggle(
+
+            "active",
+
+            button.dataset.screen ===
+              screenId
+
+          );
+
+      }
+    );
+
+
+  getElement(
+    "pageTitle"
+  ).textContent =
+    title;
+
+
+  if (
+    screenId !==
+    "inputScreen"
+  ) {
+
+    loadData()
+      .catch(
+        function() {}
+      );
+
+  }
+
+}
+
+
+/* =========================================================
+   30. EVENT UTAMA
+   ========================================================= */
+
+function bindMainEvents() {
+
+  getElement(
+    "roll"
+  )
+    .addEventListener(
+      "input",
+      calculateTotalProduction
+    );
+
+
+  getElement(
+    "berat"
+  )
+    .addEventListener(
+      "input",
+      calculateTotalProduction
+    );
+
+
+  getElement(
+    "saveBtn"
+  )
+    .addEventListener(
+      "click",
+      saveProductionData
+    );
+
+
+  getElement(
+    "reload1"
+  )
+    .addEventListener(
+      "click",
+      function() {
+
+        loadData()
+          .catch(
+            function() {}
+          );
+
+      }
+    );
+
+
+  getElement(
+    "reload2"
+  )
+    .addEventListener(
+      "click",
+      function() {
+
+        loadData()
+          .catch(
+            function() {}
+          );
+
+      }
+    );
+
+
+  document
+    .querySelectorAll(
+      ".nav button"
+    )
+    .forEach(
+      function(button) {
+
+        button.addEventListener(
+          "click",
+          function() {
+
+            openScreen(
+
+              button.dataset.screen,
+
+              button.dataset.title
+
+            );
+
+          }
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   31. SERVICE WORKER
+   ========================================================= */
+
+function registerServiceWorker() {
+
+  if (
+    !(
+      "serviceWorker"
+      in navigator
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  window.addEventListener(
+    "load",
+    function() {
+
+      navigator
+        .serviceWorker
+        .register(
+          "./service-worker.js"
+        )
+        .catch(
+          function() {}
+        );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   32. INITIALIZE APLIKASI
+   ========================================================= */
+
+function initializeApplication() {
+
+  /* Buat daftar mesin */
+
+  setupMachineOptions();
+
+
+  /* Buat Shift & Status */
+
+  setupChoiceButtons();
+
+
+  /* Tanggal otomatis */
+
+  getElement(
+    "tanggal"
+  ).value =
+    getToday();
+
+
+  /* Ambil nama terakhir */
+
+  getElement(
+    "penginput"
+  ).value =
+
+    localStorage
+      .getItem(
+        "nama_penginput"
+      ) ||
+
+    "";
+
+
+  /* Event */
+
+  bindMainEvents();
+
+
+  /* Tampilkan data awal */
+
+  renderAllData();
+
+
+  /* Ambil data Google Sheets */
+
+  loadData()
+    .catch(
+      function() {}
+    );
+
+
+  /* Aktifkan PWA */
+
+  registerServiceWorker();
+
+}
+
+
+/* =========================================================
+   33. JALANKAN APLIKASI
+   ========================================================= */
+
+initializeApplication();
+
 </script>
-</body>
-</html>
