@@ -23,44 +23,71 @@
   <title>Produksi Tekstil</title>
 
 
-  <!-- =====================================================
-       STYLE / TAMPILAN
-  ====================================================== -->
-
   <style>
 
+    /* =====================================================
+       WARNA UTAMA
+    ====================================================== */
+
     :root {
+
       --blue: #0b6ee6;
+
       --blue-dark: #0758bc;
+
       --bg: #f4f7fb;
+
       --card: #ffffff;
+
       --border: #dce3ec;
+
       --text: #1f2937;
+
       --muted: #6b7280;
+
       --green: #2fa84f;
+
       --orange: #e39a16;
+
       --red: #d33b32;
+
     }
 
 
+    /* =====================================================
+       GLOBAL
+    ====================================================== */
+
     * {
+
       box-sizing: border-box;
+
     }
 
 
     body {
+
       margin: 0;
+
       font-family: Arial, sans-serif;
+
       background: var(--bg);
+
       color: var(--text);
+
     }
 
 
     .app {
+
       max-width: 520px;
-      margin: auto;
+
       min-height: 100vh;
+
+      margin: auto;
+
       padding-bottom: 78px;
+
     }
 
 
@@ -69,8 +96,11 @@
     ====================================================== */
 
     header {
+
       position: sticky;
+
       top: 0;
+
       z-index: 5;
 
       padding: 20px 24px;
@@ -82,24 +112,34 @@
         #0d7bf0,
         var(--blue-dark)
       );
+
     }
 
 
     header h1 {
+
       margin: 0;
+
       font-size: 22px;
+
     }
 
 
     header p {
+
       margin: 5px 0 0;
+
       opacity: 0.92;
+
     }
 
 
     .online {
+
       margin-top: 8px;
+
       font-size: 12px;
+
     }
 
 
@@ -108,13 +148,18 @@
     ====================================================== */
 
     .screen {
+
       display: none;
+
       padding: 16px;
+
     }
 
 
     .screen.active {
+
       display: block;
+
     }
 
 
@@ -123,14 +168,17 @@
     ====================================================== */
 
     .card {
+
       padding: 18px;
 
       background: var(--card);
 
       border: 1px solid var(--border);
+
       border-radius: 16px;
 
       box-shadow: 0 2px 8px #0000000d;
+
     }
 
 
@@ -139,21 +187,27 @@
     ====================================================== */
 
     .field {
+
       margin-bottom: 15px;
+
     }
 
 
     label {
+
       display: block;
+
       margin-bottom: 7px;
 
       font-weight: 700;
+
     }
 
 
     input,
     select,
     textarea {
+
       width: 100%;
 
       padding: 13px 14px;
@@ -163,35 +217,49 @@
       background: #ffffff;
 
       border: 1px solid var(--border);
+
       border-radius: 12px;
+
     }
 
 
     textarea {
+
       min-height: 86px;
+
       resize: vertical;
+
     }
 
 
     .grid {
+
       display: grid;
+
       grid-template-columns: 1fr 1fr;
+
       gap: 12px;
+
     }
 
 
     /* =====================================================
-       PILIHAN SHIFT & STATUS
+       SHIFT DAN STATUS
     ====================================================== */
 
     .choices {
+
       display: grid;
+
       grid-template-columns: repeat(3, 1fr);
+
       gap: 8px;
+
     }
 
 
     .choice {
+
       padding: 12px 5px;
 
       font-size: 14px;
@@ -199,49 +267,60 @@
       background: #ffffff;
 
       border: 1px solid var(--border);
+
       border-radius: 12px;
 
       cursor: pointer;
+
     }
 
 
     .choice.active {
+
       color: var(--blue);
+
       font-weight: 700;
 
       background: #eaf4ff;
 
       border-color: var(--blue);
+
     }
 
 
     .status
     .choice[data-value="Berjalan"].active {
+
       color: var(--green);
 
       background: #e9f8ed;
 
       border-color: var(--green);
+
     }
 
 
     .status
     .choice[data-value="Perbaikan"].active {
+
       color: #9a6400;
 
       background: #fff5df;
 
       border-color: var(--orange);
+
     }
 
 
     .status
     .choice[data-value="Berhenti"].active {
+
       color: var(--red);
 
       background: #fdebea;
 
       border-color: var(--red);
+
     }
 
 
@@ -250,31 +329,39 @@
     ====================================================== */
 
     .total {
+
       display: flex;
 
       align-items: center;
+
       justify-content: space-between;
 
       margin: 4px 0 17px;
+
       padding: 15px;
 
       background: #eaf3ff;
 
       border-radius: 12px;
+
     }
 
 
     .total strong {
+
       color: var(--blue);
+
       font-size: 25px;
+
     }
 
 
     /* =====================================================
-       TOMBOL
+       TOMBOL SIMPAN
     ====================================================== */
 
     .btn {
+
       width: 100%;
 
       padding: 14px;
@@ -282,23 +369,33 @@
       color: #ffffff;
 
       font-size: 17px;
+
       font-weight: 700;
 
       background: var(--blue);
 
       border: 0;
+
       border-radius: 12px;
 
       cursor: pointer;
+
     }
 
 
     .btn:disabled {
+
       opacity: 0.55;
+
     }
 
 
+    /* =====================================================
+       TOMBOL MUAT ULANG
+    ====================================================== */
+
     .reload {
+
       margin-bottom: 12px;
 
       padding: 10px 12px;
@@ -310,9 +407,11 @@
       background: #eaf3ff;
 
       border: 0;
+
       border-radius: 10px;
 
       cursor: pointer;
+
     }
 
 
@@ -321,20 +420,26 @@
     ====================================================== */
 
     .note {
+
       margin-top: 12px;
 
       color: var(--muted);
 
       font-size: 12px;
+
       line-height: 1.5;
+
     }
 
 
     .shift-summary {
+
       margin-top: 12px;
 
       font-size: 15px;
+
       line-height: 1.8;
+
     }
 
 
@@ -343,6 +448,7 @@
     ====================================================== */
 
     .kpis {
+
       display: grid;
 
       grid-template-columns: 1fr 1fr;
@@ -350,30 +456,38 @@
       gap: 12px;
 
       margin-bottom: 12px;
+
     }
 
 
     .kpi {
+
       padding: 16px;
 
       background: #ffffff;
 
       border: 1px solid var(--border);
+
       border-radius: 14px;
+
     }
 
 
     .kpi small {
+
       color: var(--muted);
+
     }
 
 
     .kpi b {
+
       display: block;
 
       margin-top: 5px;
 
       font-size: 23px;
+
     }
 
 
@@ -382,6 +496,7 @@
     ====================================================== */
 
     .item {
+
       margin-bottom: 10px;
 
       padding: 14px;
@@ -389,29 +504,36 @@
       background: #ffffff;
 
       border: 1px solid var(--border);
+
       border-radius: 14px;
+
     }
 
 
     .itemtop {
+
       display: flex;
 
       justify-content: space-between;
 
       gap: 8px;
+
     }
 
 
     .meta {
+
       margin-top: 5px;
 
       color: var(--muted);
 
       font-size: 12px;
+
     }
 
 
     .badge {
+
       display: inline-block;
 
       margin: 8px 5px 0 0;
@@ -423,44 +545,105 @@
       background: #edf2f7;
 
       border-radius: 999px;
+
     }
 
 
     .green {
+
       color: #208d3d;
+
       background: #e9f8ed;
+
     }
 
 
     .orange {
+
       color: #966100;
+
       background: #fff5df;
+
     }
 
 
     .red {
+
       color: #c83129;
+
       background: #fdebea;
+
     }
 
 
     .empty {
+
       padding: 30px;
 
       color: var(--muted);
 
       text-align: center;
+
     }
 
 
     /* =====================================================
-       NAVIGASI
+       TOMBOL HAPUS
+    ====================================================== */
+
+    .delete-btn {
+
+      display: block;
+
+      width: 100%;
+
+      margin-top: 12px;
+
+      padding: 9px 12px;
+
+      color: #d33b32;
+
+      font-size: 13px;
+
+      font-weight: 700;
+
+      background: #fdebea;
+
+      border: 1px solid #f3b8b4;
+
+      border-radius: 9px;
+
+      cursor: pointer;
+
+    }
+
+
+    .delete-btn:hover {
+
+      background: #f8d0cd;
+
+    }
+
+
+    .delete-btn:disabled {
+
+      opacity: 0.55;
+
+      cursor: not-allowed;
+
+    }
+
+
+    /* =====================================================
+       NAVIGASI BAWAH
     ====================================================== */
 
     .nav {
+
       position: fixed;
 
       bottom: 0;
+
       left: 50%;
 
       z-index: 10;
@@ -470,7 +653,9 @@
       grid-template-columns: repeat(3, 1fr);
 
       width: 100%;
+
       max-width: 520px;
+
       height: 70px;
 
       background: #ffffff;
@@ -478,10 +663,12 @@
       border-top: 1px solid var(--border);
 
       transform: translateX(-50%);
+
     }
 
 
     .nav button {
+
       color: var(--muted);
 
       font-weight: 700;
@@ -491,18 +678,23 @@
       border: 0;
 
       cursor: pointer;
+
     }
 
 
     .nav button.active {
+
       color: var(--blue);
+
     }
 
 
     .nav span {
+
       display: block;
 
       font-size: 23px;
+
     }
 
 
@@ -514,7 +706,9 @@
 
       .grid,
       .choices {
+
         grid-template-columns: 1fr;
+
       }
 
     }
@@ -537,12 +731,16 @@
     <header>
 
       <h1 id="pageTitle">
+
         Input Produksi
+
       </h1>
 
 
       <p>
+
         Data bersama · Google Sheets
+
       </p>
 
 
@@ -550,7 +748,9 @@
         id="connection"
         class="online"
       >
+
         Menghubungkan ke Google Sheets...
+
       </div>
 
     </header>
@@ -575,8 +775,11 @@
         <div class="field">
 
           <label for="penginput">
+
             Nama Penginput
+
           </label>
+
 
           <input
             id="penginput"
@@ -593,8 +796,11 @@
         <div class="field">
 
           <label for="tanggal">
+
             Tanggal
+
           </label>
+
 
           <input
             id="tanggal"
@@ -605,7 +811,7 @@
 
 
 
-        <!-- MESIN & JENIS KAIN -->
+        <!-- MESIN DAN JENIS KAIN -->
 
         <div class="grid">
 
@@ -613,8 +819,11 @@
           <div class="field">
 
             <label for="mesin">
+
               Mesin
+
             </label>
+
 
             <select id="mesin">
             </select>
@@ -625,8 +834,11 @@
           <div class="field">
 
             <label for="kain">
+
               Jenis Kain
+
             </label>
+
 
             <input
               id="kain"
@@ -646,8 +858,11 @@
         <div class="field">
 
           <label>
+
             Shift
+
           </label>
+
 
           <div
             class="choices"
@@ -659,7 +874,7 @@
 
 
 
-        <!-- JUMLAH ROLL & BERAT -->
+        <!-- JUMLAH ROLL DAN BERAT -->
 
         <div class="grid">
 
@@ -667,8 +882,11 @@
           <div class="field">
 
             <label for="roll">
+
               Jumlah Roll
+
             </label>
+
 
             <input
               id="roll"
@@ -683,8 +901,11 @@
           <div class="field">
 
             <label for="berat">
+
               Berat/Roll (kg)
+
             </label>
+
 
             <input
               id="berat"
@@ -701,16 +922,21 @@
 
 
 
-        <!-- TOTAL PRODUKSI -->
+        <!-- TOTAL -->
 
         <div class="total">
 
           <span>
+
             Total Produksi
+
           </span>
 
+
           <strong id="total">
+
             0 kg
+
           </strong>
 
         </div>
@@ -722,8 +948,11 @@
         <div class="field">
 
           <label>
+
             Status Mesin
+
           </label>
+
 
           <div
             class="choices status"
@@ -740,8 +969,11 @@
         <div class="field">
 
           <label for="kendala">
+
             Kendala
+
           </label>
+
 
           <textarea
             id="kendala"
@@ -759,13 +991,15 @@
           class="btn"
           id="saveBtn"
         >
+
           💾 Simpan ke Google Sheets
+
         </button>
 
 
         <div class="note">
 
-          “Semua HP pengguna menggunakan data Google Sheets yang sama.”
+          Data terhubung ke Google Sheets yang sama.
 
         </div>
 
@@ -788,10 +1022,13 @@
 
 
       <button
+        type="button"
         class="reload"
         id="reload1"
       >
+
         ↻ Muat ulang data
+
       </button>
 
 
@@ -802,24 +1039,35 @@
         <div class="kpi">
 
           <small>
+
             Total Produksi
+
           </small>
 
+
           <b id="rekapKg">
+
             0 kg
+
           </b>
 
         </div>
 
 
+
         <div class="kpi">
 
           <small>
+
             Total Roll
+
           </small>
 
+
           <b id="rekapRoll">
+
             0
+
           </b>
 
         </div>
@@ -835,24 +1083,35 @@
         <div class="kpi">
 
           <small>
+
             Jumlah Data
+
           </small>
 
+
           <b id="rekapData">
+
             0
+
           </b>
 
         </div>
 
 
+
         <div class="kpi">
 
           <small>
+
             Status Berjalan
+
           </small>
 
+
           <b id="rekapJalan">
+
             0
+
           </b>
 
         </div>
@@ -865,8 +1124,11 @@
       <div class="card">
 
         <b>
+
           Produksi per Shift
+
         </b>
+
 
         <div
           id="shiftSummary"
@@ -892,10 +1154,13 @@
 
 
       <button
+        type="button"
         class="reload"
         id="reload2"
       >
+
         ↻ Muat ulang data
+
       </button>
 
 
@@ -911,7 +1176,7 @@
 
 
   <!-- =====================================================
-       NAVIGASI BAWAH
+       NAVIGASI
   ====================================================== -->
 
   <nav class="nav">
@@ -931,6 +1196,7 @@
     </button>
 
 
+
     <button
       type="button"
       data-screen="rekapScreen"
@@ -942,6 +1208,7 @@
       Rekap
 
     </button>
+
 
 
     <button
@@ -961,10 +1228,6 @@
 
 
 
-  <!-- =====================================================
-       JAVASCRIPT
-  ====================================================== -->
-
   <script>
 
     "use strict";
@@ -972,14 +1235,12 @@
 
     /* =====================================================
        1. KONFIGURASI
-
-       BAGIAN INI YANG PALING SERING DIUBAH
     ====================================================== */
 
     const CONFIG = {
 
 
-      /* URL GOOGLE APPS SCRIPT */
+      /* GOOGLE APPS SCRIPT */
 
       apiUrl:
 
@@ -987,12 +1248,7 @@
 
 
 
-      /* ===============================================
-         DAFTAR MESIN
-
-         Kalau mau mengganti nama mesin,
-         cukup ubah bagian ini.
-      =============================================== */
+      /* DAFTAR MESIN */
 
       machines: [
 
@@ -1010,9 +1266,7 @@
 
 
 
-      /* ===============================================
-         SHIFT
-      =============================================== */
+      /* SHIFT */
 
       shifts: [
 
@@ -1026,9 +1280,7 @@
 
 
 
-      /* ===============================================
-         STATUS MESIN
-      =============================================== */
+      /* STATUS */
 
       statuses: [
 
@@ -1042,13 +1294,13 @@
 
 
 
-      /* PILIHAN DEFAULT */
-
       defaultShift:
+
         "Pagi",
 
 
       defaultStatus:
+
         "Berjalan"
 
 
@@ -1057,24 +1309,25 @@
 
 
     /* =====================================================
-       2. STATE / DATA SEMENTARA
+       2. DATA SEMENTARA
     ====================================================== */
 
     let sharedData = [];
 
 
     let selectedShift =
+
       CONFIG.defaultShift;
 
 
     let selectedStatus =
+
       CONFIG.defaultStatus;
 
 
 
     /* =====================================================
-       3. HELPER
-       AMBIL ELEMENT HTML BERDASARKAN ID
+       3. AMBIL ELEMENT HTML
     ====================================================== */
 
     function getElement(id) {
@@ -1086,18 +1339,19 @@
 
 
     /* =====================================================
-       4. HELPER
-       TANGGAL HARI INI
+       4. TANGGAL HARI INI
     ====================================================== */
 
     function getToday() {
 
 
       const date =
+
         new Date();
 
 
       const offset =
+
         date.getTimezoneOffset();
 
 
@@ -1118,17 +1372,20 @@
 
 
     /* =====================================================
-       5. HELPER
-       MEMBUAT ID UNIK
+       5. BUAT ID UNIK
     ====================================================== */
 
     function generateId() {
 
 
       if (
+
         window.crypto &&
+
         crypto.randomUUID
+
       ) {
+
 
         return crypto.randomUUID();
 
@@ -1152,55 +1409,52 @@
 
 
     /* =====================================================
-       6. HELPER
-       MENGAMANKAN TEXT HTML
+       6. AMANKAN TEXT HTML
     ====================================================== */
 
     function escapeHtml(value) {
 
 
-      return String(value || "")
+      return String(
 
-        .replace(
+        value || ""
 
-          /[&<>"']/g,
+      ).replace(
 
-          function(character) {
+        /[&<>"']/g,
 
-
-            const map = {
-
-              "&":
-                "&amp;",
-
-              "<":
-                "&lt;",
-
-              ">":
-                "&gt;",
-
-              '"':
-                "&quot;",
-
-              "'":
-                "&#39;"
-
-            };
+        function(character) {
 
 
-            return map[character];
+          const map = {
 
-          }
+            "&": "&amp;",
 
-        );
+            "<": "&lt;",
+
+            ">": "&gt;",
+
+            '"': "&quot;",
+
+            "'": "&#39;"
+
+          };
+
+
+          return map[
+            character
+          ];
+
+        }
+
+      );
 
     }
 
 
 
     /* =====================================================
-       7. HELPER
-       DELAY
+       7. DELAY
     ====================================================== */
 
     function delay(ms) {
@@ -1210,9 +1464,13 @@
 
         function(resolve) {
 
+
           setTimeout(
+
             resolve,
+
             ms
+
           );
 
         }
@@ -1224,13 +1482,14 @@
 
 
     /* =====================================================
-       8. SETUP DAFTAR MESIN
+       8. SETUP MESIN
     ====================================================== */
 
     function setupMachineOptions() {
 
 
       const machineSelect =
+
         getElement(
           "mesin"
         );
@@ -1245,19 +1504,17 @@
             function(machine) {
 
 
-              return (
+              return `
 
-                '<option value="' +
+                <option
+                  value="${escapeHtml(machine)}"
+                >
 
-                escapeHtml(machine) +
+                  ${escapeHtml(machine)}
 
-                '">' +
+                </option>
 
-                escapeHtml(machine) +
-
-                "</option>"
-
-              );
+              `;
 
             }
 
@@ -1270,8 +1527,7 @@
 
 
     /* =====================================================
-       9. MEMBUAT BUTTON PILIHAN
-       UNTUK SHIFT & STATUS
+       9. MEMBUAT PILIHAN
     ====================================================== */
 
     function createChoiceButtons(
@@ -1286,6 +1542,7 @@
 
 
       const container =
+
         getElement(
           containerId
         );
@@ -1300,7 +1557,7 @@
             function(value) {
 
 
-              const activeClass =
+              const active =
 
                 value === activeValue
 
@@ -1309,29 +1566,23 @@
                   : "";
 
 
-              return (
+              return `
 
-                '<button ' +
+                <button
 
-                'type="button" ' +
+                  type="button"
 
-                'class="choice' +
+                  class="choice${active}"
 
-                activeClass +
+                  data-value="${escapeHtml(value)}"
 
-                '" ' +
+                >
 
-                'data-value="' +
+                  ${escapeHtml(value)}
 
-                escapeHtml(value) +
+                </button>
 
-                '">' +
-
-                escapeHtml(value) +
-
-                "</button>"
-
-              );
+              `;
 
             }
 
@@ -1379,7 +1630,7 @@
 
 
     /* =====================================================
-       11. MEMBERI STATUS ACTIVE PADA PILIHAN
+       11. SET PILIHAN AKTIF
     ====================================================== */
 
     function setActiveChoice(
@@ -1426,7 +1677,7 @@
 
 
     /* =====================================================
-       12. EVENT SHIFT & STATUS
+       12. EVENT SHIFT DAN STATUS
     ====================================================== */
 
     function bindChoiceEvents() {
@@ -1435,9 +1686,7 @@
       document
 
         .querySelectorAll(
-
           "#shiftChoices .choice"
-
         )
 
         .forEach(
@@ -1453,6 +1702,7 @@
 
 
                 selectedShift =
+
                   button.dataset.value;
 
 
@@ -1477,9 +1727,7 @@
       document
 
         .querySelectorAll(
-
           "#statusChoices .choice"
-
         )
 
         .forEach(
@@ -1495,6 +1743,7 @@
 
 
                 selectedStatus =
+
                   button.dataset.value;
 
 
@@ -1520,8 +1769,6 @@
 
     /* =====================================================
        13. HITUNG TOTAL PRODUKSI
-
-       Jumlah Roll × Berat/Roll
     ====================================================== */
 
     function calculateTotalProduction() {
@@ -1546,6 +1793,7 @@
 
 
       const total =
+
         roll * weight;
 
 
@@ -1554,9 +1802,12 @@
       ).textContent =
 
         total
+
           .toLocaleString(
             "id-ID"
-          ) +
+          )
+
+        +
 
         " kg";
 
@@ -1566,8 +1817,6 @@
 
     /* =====================================================
        14. JSONP
-
-       Untuk membaca data dari Google Sheets
     ====================================================== */
 
     function requestJsonp(params) {
@@ -1576,8 +1825,11 @@
       return new Promise(
 
         function(
+
           resolve,
+
           reject
+
         ) {
 
 
@@ -1646,6 +1898,7 @@
               script.parentNode
             ) {
 
+
               script.parentNode
                 .removeChild(
                   script
@@ -1676,10 +1929,12 @@
 
 
           params.callback =
+
             callbackName;
 
 
           params.t =
+
             Date.now();
 
 
@@ -1687,6 +1942,7 @@
           const queryString =
 
             Object
+
               .keys(params)
 
               .map(
@@ -1698,9 +1954,13 @@
 
                     encodeURIComponent(
                       key
-                    ) +
+                    )
 
-                    "=" +
+                    +
+
+                    "="
+
+                    +
 
                     encodeURIComponent(
                       params[key]
@@ -1760,7 +2020,7 @@
 
 
     /* =====================================================
-       15. LOAD DATA DARI GOOGLE SHEETS
+       15. LOAD DATA
     ====================================================== */
 
     async function loadData() {
@@ -1776,7 +2036,6 @@
       connection.textContent =
 
         "Memuat data bersama...";
-
 
 
       try {
@@ -1962,7 +2221,7 @@
 
 
     /* =====================================================
-       17. MEMBUAT DATA PRODUKSI
+       17. MEMBUAT PAYLOAD
     ====================================================== */
 
     function createProductionPayload(
@@ -1992,6 +2251,7 @@
 
 
         shift:
+
           selectedShift,
 
 
@@ -2003,7 +2263,9 @@
             .value
             .trim()
 
-          || "-",
+          ||
+
+          "-",
 
 
         jumlahRoll:
@@ -2029,6 +2291,7 @@
 
 
         status:
+
           selectedStatus,
 
 
@@ -2040,7 +2303,9 @@
             .value
             .trim()
 
-          || "-",
+          ||
+
+          "-",
 
 
         penginput:
@@ -2059,7 +2324,7 @@
 
 
     /* =====================================================
-       18. STATUS TOMBOL SIMPAN
+       18. TOMBOL SIMPAN
     ====================================================== */
 
     function setSaveButtonLoading(
@@ -2075,6 +2340,7 @@
 
 
       button.disabled =
+
         isLoading;
 
 
@@ -2091,13 +2357,14 @@
 
 
     /* =====================================================
-       19. SIMPAN DATA KE GOOGLE SHEETS
+       19. SIMPAN DATA
     ====================================================== */
 
     async function saveProductionData() {
 
 
       const validation =
+
         validateForm();
 
 
@@ -2139,6 +2406,7 @@
 
 
       const recordId =
+
         generateId();
 
 
@@ -2166,7 +2434,6 @@
 
           {
 
-
             method:
               "POST",
 
@@ -2177,11 +2444,8 @@
 
             headers: {
 
-
               "Content-Type":
-
                 "text/plain;charset=utf-8"
-
 
             },
 
@@ -2191,7 +2455,6 @@
               JSON.stringify(
                 payload
               )
-
 
           }
 
@@ -2243,8 +2506,8 @@
 
           resetForm();
 
-        }
 
+        }
 
         else {
 
@@ -2286,7 +2549,195 @@
 
 
     /* =====================================================
-       20. RESET FORM
+       20. HAPUS DATA
+    ====================================================== */
+
+    async function deleteProductionData(
+      id
+    ) {
+
+
+      const confirmation =
+
+        confirm(
+
+          "Apakah Anda yakin ingin menghapus data ini?"
+
+        );
+
+
+
+      if (!confirmation) {
+
+
+        return;
+
+      }
+
+
+
+      const button =
+
+        document.querySelector(
+
+          '.delete-btn[data-id="' +
+          CSS.escape(id) +
+          '"]'
+
+        );
+
+
+
+      if (button) {
+
+
+        button.disabled =
+          true;
+
+
+        button.textContent =
+          "Menghapus...";
+
+      }
+
+
+
+      try {
+
+
+        await fetch(
+
+          CONFIG.apiUrl,
+
+          {
+
+            method:
+              "POST",
+
+
+            mode:
+              "no-cors",
+
+
+            headers: {
+
+              "Content-Type":
+                "text/plain;charset=utf-8"
+
+            },
+
+
+            body:
+
+              JSON.stringify({
+
+                action:
+                  "delete",
+
+                id:
+                  id
+
+              })
+
+          }
+
+        );
+
+
+
+        await delay(
+          1500
+        );
+
+
+
+        const rows =
+
+          await loadData();
+
+
+
+        const stillExists =
+
+          rows.some(
+
+            function(row) {
+
+
+              return (
+
+                String(row.id) ===
+                String(id)
+
+              );
+
+            }
+
+          );
+
+
+
+        if (!stillExists) {
+
+
+          alert(
+
+            "Data berhasil dihapus."
+
+          );
+
+
+        }
+
+        else {
+
+
+          alert(
+
+            "Data belum terhapus. Pastikan Google Apps Script sudah diperbarui dan di-deploy ulang."
+
+          );
+
+        }
+
+
+      }
+
+      catch(error) {
+
+
+        alert(
+
+          "Gagal menghapus data."
+
+        );
+
+
+      }
+
+      finally {
+
+
+        if (button) {
+
+
+          button.disabled =
+            false;
+
+
+          button.textContent =
+            "🗑 Hapus";
+
+        }
+
+      }
+
+    }
+
+
+
+    /* =====================================================
+       21. RESET FORM
     ====================================================== */
 
     function resetForm() {
@@ -2382,7 +2833,7 @@
 
 
     /* =====================================================
-       21. WARNA STATUS RIWAYAT
+       22. WARNA STATUS
     ====================================================== */
 
     function getStatusClass(
@@ -2394,18 +2845,22 @@
         status === "Berjalan"
       ) {
 
+
         return "green";
 
       }
+
 
 
       if (
         status === "Perbaikan"
       ) {
 
+
         return "orange";
 
       }
+
 
 
       return "red";
@@ -2415,7 +2870,7 @@
 
 
     /* =====================================================
-       22. TAMPILKAN RIWAYAT
+       23. TAMPILKAN RIWAYAT
     ====================================================== */
 
     function renderHistory() {
@@ -2512,16 +2967,14 @@
 
                   <span class="badge">
 
-                    ${record.jumlahRoll}
-                    roll
+                    ${record.jumlahRoll} roll
 
                   </span>
 
 
                   <span class="badge">
 
-                    ${record.totalKg}
-                    kg
+                    ${record.totalKg} kg
 
                   </span>
 
@@ -2535,6 +2988,17 @@
                   </span>
 
 
+                  <button
+                    type="button"
+                    class="delete-btn"
+                    data-id="${escapeHtml(record.id)}"
+                  >
+
+                    🗑 Hapus
+
+                  </button>
+
+
                 </div>
 
               `;
@@ -2545,12 +3009,46 @@
 
           .join("");
 
+
+
+      document
+
+        .querySelectorAll(
+          ".delete-btn"
+        )
+
+        .forEach(
+
+          function(button) {
+
+
+            button.addEventListener(
+
+              "click",
+
+              function() {
+
+
+                deleteProductionData(
+
+                  button.dataset.id
+
+                );
+
+              }
+
+            );
+
+          }
+
+        );
+
     }
 
 
 
     /* =====================================================
-       23. HITUNG TOTAL KG
+       24. HITUNG TOTAL KG
     ====================================================== */
 
     function calculateTotalKg() {
@@ -2561,8 +3059,11 @@
         .reduce(
 
           function(
+
             total,
+
             record
+
           ) {
 
 
@@ -2587,7 +3088,7 @@
 
 
     /* =====================================================
-       24. HITUNG TOTAL ROLL
+       25. HITUNG TOTAL ROLL
     ====================================================== */
 
     function calculateTotalRoll() {
@@ -2598,8 +3099,11 @@
         .reduce(
 
           function(
+
             total,
+
             record
+
           ) {
 
 
@@ -2624,7 +3128,7 @@
 
 
     /* =====================================================
-       25. HITUNG JUMLAH STATUS BERJALAN
+       26. HITUNG STATUS BERJALAN
     ====================================================== */
 
     function countRunningStatus() {
@@ -2655,15 +3159,13 @@
 
 
     /* =====================================================
-       26. HITUNG PRODUKSI PER SHIFT
+       27. PRODUKSI PER SHIFT
     ====================================================== */
 
     function calculateProductionPerShift() {
 
 
-      const result =
-        {};
-
+      const result = {};
 
 
       CONFIG.shifts
@@ -2673,8 +3175,9 @@
           function(shift) {
 
 
-            result[shift] =
-              0;
+            result[
+              shift
+            ] = 0;
 
           }
 
@@ -2721,7 +3224,7 @@
 
 
     /* =====================================================
-       27. TAMPILKAN REKAP
+       28. TAMPILKAN REKAP
     ====================================================== */
 
     function renderRecap() {
@@ -2756,6 +3259,7 @@
       ).textContent =
 
         totalKg
+
           .toLocaleString(
             "id-ID"
           )
@@ -2834,7 +3338,7 @@
 
 
     /* =====================================================
-       28. RENDER SEMUA DATA
+       29. RENDER SEMUA DATA
     ====================================================== */
 
     function renderAllData() {
@@ -2850,7 +3354,7 @@
 
 
     /* =====================================================
-       29. NAVIGASI HALAMAN
+       30. NAVIGASI
     ====================================================== */
 
     function openScreen(
@@ -2873,10 +3377,9 @@
           function(screen) {
 
 
-            screen.classList
-              .remove(
-                "active"
-              );
+            screen.classList.remove(
+              "active"
+            );
 
           }
 
@@ -2947,7 +3450,7 @@
 
 
     /* =====================================================
-       30. EVENT UTAMA
+       31. EVENT UTAMA
     ====================================================== */
 
     function bindMainEvents() {
@@ -3075,7 +3578,7 @@
 
 
     /* =====================================================
-       31. SERVICE WORKER / PWA
+       32. SERVICE WORKER
     ====================================================== */
 
     function registerServiceWorker() {
@@ -3105,7 +3608,9 @@
 
 
           navigator
+
             .serviceWorker
+
             .register(
 
               "./service-worker.js"
@@ -3127,21 +3632,18 @@
 
 
     /* =====================================================
-       32. INITIALIZE APLIKASI
+       33. MULAI APLIKASI
     ====================================================== */
 
     function initializeApplication() {
 
 
-      /* BUAT DAFTAR MESIN */
-
       setupMachineOptions();
 
-      /* BUAT SHIFT & STATUS */
 
       setupChoiceButtons();
 
-      /* TANGGAL HARI INI */
+
 
       getElement(
         "tanggal"
@@ -3149,31 +3651,28 @@
 
         getToday();
 
-      /* AMBIL NAMA TERAKHIR */
+
 
       getElement(
         "penginput"
       ).value =
 
         localStorage.getItem(
-
           "nama_penginput"
-
         )
 
         ||
 
         "";
 
-      /* AKTIFKAN EVENT */
+
 
       bindMainEvents();
 
-      /* TAMPILKAN DATA AWAL */
 
       renderAllData();
 
-      /* AMBIL GOOGLE SHEETS */
+
 
       loadData()
 
@@ -3181,14 +3680,16 @@
           function() {}
         );
 
-      /* AKTIFKAN PWA */
+
 
       registerServiceWorker();
 
     }
 
+
+
     /* =====================================================
-       33. JALANKAN APLIKASI
+       JALANKAN
     ====================================================== */
 
     initializeApplication();
