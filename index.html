@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="id">
 
@@ -495,67 +496,164 @@
        RIWAYAT
     ====================================================== */
 
+    .item {
+
+      margin-bottom: 10px;
+
+      padding: 14px;
+
+      background: #ffffff;
+
+      border: 1px solid var(--border);
+
+      border-radius: 14px;
+
+    }
+
+
     .itemtop {
 
-  display: flex;
+      display: flex;
 
-  align-items: flex-start;
+      align-items: flex-start;
 
-  justify-content: space-between;
+      justify-content: space-between;
 
-  gap: 10px;
+      gap: 12px;
 
-}
-
-
-.badge {
-
-  display: inline-flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  width: auto;
-
-  height: auto;
-
-  margin: 8px 5px 0 0;
-
-  padding: 5px 8px;
-
-  font-size: 11px;
-
-  line-height: 1;
-
-  white-space: nowrap;
-
-  background: #edf2f7;
-
-  border-radius: 999px;
-
-}
+    }
 
 
-/* STATUS DI KANAN ATAS RIWAYAT */
+    .itemtop > div {
 
-.itemtop > .badge {
+      flex: 1;
 
-  flex: 0 0 auto;
+      min-width: 0;
 
-  align-self: flex-start;
+    }
 
-  margin: 0;
 
-  padding: 5px 9px;
+    .meta {
 
-  font-size: 10px;
+      margin-top: 5px;
 
-  line-height: 1;
+      color: var(--muted);
 
-  white-space: nowrap;
+      font-size: 12px;
 
-}
+      line-height: 1.4;
+
+    }
+
+
+    /* BADGE UMUM: ROLL, KG, KENDALA */
+
+    .badge {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      width: auto;
+
+      min-width: 0;
+
+      height: auto;
+
+      margin: 8px 5px 0 0;
+
+      padding: 5px 8px;
+
+      font-size: 11px;
+
+      line-height: 1;
+
+      white-space: nowrap;
+
+      background: #edf2f7;
+
+      border-radius: 999px;
+
+    }
+
+
+    /* STATUS KHUSUS DI KANAN ATAS */
+
+    .status-badge {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      flex: 0 0 auto;
+
+      width: max-content;
+
+      min-width: 0;
+
+      max-width: none;
+
+      height: 22px;
+
+      min-height: 22px;
+
+      margin: 0;
+
+      padding: 0 10px;
+
+      font-size: 10px;
+
+      font-weight: 600;
+
+      line-height: 1;
+
+      white-space: nowrap;
+
+      border-radius: 11px;
+
+    }
+
+
+    .green {
+
+      color: #208d3d;
+
+      background: #e9f8ed;
+
+    }
+
+
+    .orange {
+
+      color: #966100;
+
+      background: #fff5df;
+
+    }
+
+
+    .red {
+
+      color: #c83129;
+
+      background: #fdebea;
+
+    }
+
+
+    .empty {
+
+      padding: 30px;
+
+      color: var(--muted);
+
+      text-align: center;
+
+    }
 
 
     /* =====================================================
@@ -2925,7 +3023,7 @@
 
 
                     <span
-                      class="badge ${getStatusClass(record.status)}"
+                      class="status-badge ${getStatusClass(record.status)}"
                     >
 
                       ${escapeHtml(record.status)}
@@ -3584,7 +3682,17 @@
 
             .register(
 
-              "./service-worker.js"
+              "./service-worker.js?v=4"
+
+            )
+
+            .then(
+
+              function(registration) {
+
+                registration.update();
+
+              }
 
             )
 
