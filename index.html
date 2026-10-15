@@ -2951,173 +2951,240 @@
 
 
 
-    /* =====================================================
-       23. TAMPILKAN RIWAYAT
-    ====================================================== */
-
-    function renderHistory() {
+   /* =====================================================
+   23. FORMAT TANGGAL INDONESIA + TAMPILKAN RIWAYAT
+====================================================== */
 
 
-      const container =
+/* FORMAT TANGGAL MENJADI:
+   15 Okt 2026
+*/
 
-        getElement(
-          "riwayatList"
-        );
+function formatTanggalIndonesia(value) {
 
-
-
-      if (
-        sharedData.length === 0
-      ) {
+  if (!value) {
+    return "-";
+  }
 
 
-        container.innerHTML =
-
-          '<div class="empty">' +
-
-          "Belum ada data bersama." +
-
-          "</div>";
+  const tanggal =
+    new Date(value);
 
 
-        return;
+  if (
+    isNaN(
+      tanggal.getTime()
+    )
+  ) {
 
-      }
+    return String(value);
 
-
-
-      container.innerHTML =
-
-        sharedData
-
-          .map(
-
-            function(record) {
+  }
 
 
-              return `
+  return new Intl.DateTimeFormat(
+    "id-ID",
+    {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      timeZone: "Asia/Jakarta"
+    }
+  )
+    .format(tanggal)
+    .replace(/\./g, "");
 
-                <div class="item">
-
-
-                  <div class="itemtop">
-
-
-                    <div>
-
-
-                      <b>
-
-                        ${escapeHtml(record.tanggal)}
-
-                        ·
-
-                        ${escapeHtml(record.shift)}
-
-                      </b>
+}
 
 
-                      <div class="meta">
 
-                        ${escapeHtml(record.mesin)}
+/* =====================================================
+   TAMPILKAN RIWAYAT
+====================================================== */
 
-                        ·
-
-                        ${escapeHtml(record.jenisKain)}
-
-                        · oleh
-
-                        ${escapeHtml(record.penginput)}
-
-                      </div>
+function renderHistory() {
 
 
-                    </div>
+  const container =
+
+    getElement(
+      "riwayatList"
+    );
 
 
-                    <span
-                      class="badge ${getStatusClass(record.status)}"
-                    >
 
-                      ${escapeHtml(record.status)}
+  /* JIKA BELUM ADA DATA */
 
-                    </span>
+  if (
+    sharedData.length === 0
+  ) {
 
+
+    container.innerHTML =
+
+      '<div class="empty">' +
+
+      "Belum ada data bersama." +
+
+      "</div>";
+
+
+    return;
+
+  }
+
+
+
+  /* TAMPILKAN DATA */
+
+  container.innerHTML =
+
+    sharedData
+
+      .map(
+
+        function(record) {
+
+
+          return `
+
+            <div class="item">
+
+
+              <div class="itemtop">
+
+
+                <div>
+
+
+                  <b>
+
+                    ${escapeHtml(
+                      formatTanggalIndonesia(
+                        record.tanggal
+                      )
+                    )}
+
+                    ·
+
+                    ${escapeHtml(
+                      record.shift
+                    )}
+
+                  </b>
+
+
+                  <div class="meta">
+
+                    ${escapeHtml(
+                      record.mesin
+                    )}
+
+                    ·
+
+                    ${escapeHtml(
+                      record.jenisKain
+                    )}
+
+                    · oleh
+
+                    ${escapeHtml(
+                      record.penginput
+                    )}
 
                   </div>
 
 
-                  <span class="badge">
-
-                    ${record.jumlahRoll} roll
-
-                  </span>
-
-
-                  <span class="badge">
-
-                    ${record.totalKg} kg
-
-                  </span>
-
-
-                  <span class="badge">
-
-                    Kendala:
-
-                    ${escapeHtml(record.kendala)}
-
-                  </span>
-
-
-                  <button
-                    type="button"
-                    class="delete-btn"
-                    data-id="${escapeHtml(record.id)}"
-                  >
-
-                    🗑 Hapus
-
-                  </button>
-
-
                 </div>
 
-              `;
 
-            }
+                <span
+                  class="badge ${getStatusClass(record.status)}"
+                >
 
-          )
+                  ${escapeHtml(
+                    record.status
+                  )}
 
-          .join("");
-
-
-
-      document
-
-        .querySelectorAll(
-          ".delete-btn"
-        )
-
-        .forEach(
-
-          function(button) {
+                </span>
 
 
-            button.addEventListener(
-
-              "click",
-
-              function() {
+              </div>
 
 
-                deleteProductionData(
+              <span class="badge">
 
-                  button.dataset.id
+                ${record.jumlahRoll}
+                roll
 
-                );
+              </span>
 
-              }
+
+              <span class="badge">
+
+                ${record.totalKg}
+                kg
+
+              </span>
+
+
+              <span class="badge">
+
+                Kendala:
+
+                ${escapeHtml(
+                  record.kendala
+                )}
+
+              </span>
+
+
+              <button
+                type="button"
+                class="delete-btn"
+                data-id="${escapeHtml(record.id)}"
+              >
+
+                🗑 Hapus
+
+              </button>
+
+
+            </div>
+
+          `;
+
+        }
+
+      )
+
+      .join("");
+
+
+
+  /* EVENT TOMBOL HAPUS */
+
+  document
+
+    .querySelectorAll(
+      ".delete-btn"
+    )
+
+    .forEach(
+
+      function(button) {
+
+
+        button.addEventListener(
+
+          "click",
+
+          function() {
+
+
+            deleteProductionData(
+
+              button.dataset.id
 
             );
 
@@ -3125,7 +3192,11 @@
 
         );
 
-    }
+      }
+
+    );
+
+}
 
 
 
