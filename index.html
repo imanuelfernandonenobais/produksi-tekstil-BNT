@@ -520,13 +520,13 @@
     }
 
 
-   /* =====================================================
-   RIWAYAT
+/* =====================================================
+   RIWAYAT - UKURAN TEKS DIPERBESAR
 ====================================================== */
 
 .item {
   margin-bottom: 12px;
-  padding: 14px;
+  padding: 15px;
 
   background: #ffffff;
 
@@ -537,7 +537,7 @@
 }
 
 
-/* BAGIAN ATAS CARD */
+/* BAGIAN ATAS */
 
 .itemtop {
   display: flex;
@@ -554,42 +554,27 @@
 }
 
 
-/* JUDUL TANGGAL + SHIFT */
+/* TANGGAL + SHIFT */
 
-.history-title {
-  color: var(--text);
-
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-
-/* MESIN, KAIN, PENGINPUT */
-
-.meta {
-  margin-top: 4px;
-
-  color: var(--muted);
-
-  font-size: 11px;
+.itemtop b {
+  font-size: 15px;
   line-height: 1.4;
 }
 
 
-/* BARIS BADGE */
+/* MESIN · JENIS KAIN · PENGINPUT */
 
-.badge-row {
-  display: flex;
-  flex-wrap: wrap;
+.meta {
+  margin-top: 5px;
 
-  gap: 5px;
+  color: var(--muted);
 
-  margin-top: 9px;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 
-/* BADGE ROLL, KG, KENDALA */
+/* KETERANGAN ROLL, KG, KENDALA */
 
 .badge {
   display: inline-flex;
@@ -597,13 +582,13 @@
   align-items: center;
   justify-content: center;
 
-  margin: 0;
+  margin: 9px 5px 0 0;
 
-  padding: 5px 8px;
+  padding: 6px 9px;
 
   color: #4b5563;
 
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1;
 
   white-space: nowrap;
@@ -614,31 +599,21 @@
 }
 
 
-/* STATUS DI KANAN ATAS */
+/* STATUS BERJALAN / PERBAIKAN / BERHENTI */
 
-.status-badge {
-  display: inline-flex;
-
-  align-items: center;
-  justify-content: center;
-
+.itemtop > .badge {
   flex: 0 0 auto;
 
   margin: 0;
 
-  padding: 5px 9px;
+  padding: 6px 10px;
 
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 600;
-  line-height: 1;
-
-  white-space: nowrap;
-
-  border-radius: 999px;
 }
 
 
-/* STATUS BERJALAN */
+/* WARNA STATUS */
 
 .green {
   color: #208d3d;
@@ -646,15 +621,11 @@
 }
 
 
-/* STATUS PERBAIKAN */
-
 .orange {
   color: #966100;
   background: #fff5df;
 }
 
-
-/* STATUS BERHENTI */
 
 .red {
   color: #c83129;
@@ -662,16 +633,37 @@
 }
 
 
-/* JIKA DATA KOSONG */
+/* TOMBOL HAPUS */
 
-.empty {
-  padding: 30px;
+.delete-btn {
+  display: flex;
 
-  color: var(--muted);
+  align-items: center;
+  justify-content: center;
 
-  text-align: center;
+  width: auto;
+
+  margin: 12px 0 0 auto;
+
+  padding: 7px 12px;
+
+  color: #d33b32;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  background: #fff5f4;
+
+  border: 1px solid #f3b8b4;
+  border-radius: 8px;
+
+  cursor: pointer;
 }
 
+
+.delete-btn:hover {
+  background: #fdebea;
+}
     
 
     /* =====================================================
