@@ -520,149 +520,202 @@
     }
 
 
+   /* =====================================================
+   RIWAYAT
+====================================================== */
+
+.item {
+  margin-bottom: 12px;
+  padding: 14px;
+
+  background: #ffffff;
+
+  border: 1px solid var(--border);
+  border-radius: 14px;
+
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+
+/* BAGIAN ATAS CARD */
+
+.itemtop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+
+.itemtop > div {
+  flex: 1;
+  min-width: 0;
+}
+
+
+/* JUDUL TANGGAL + SHIFT */
+
+.history-title {
+  color: var(--text);
+
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+
+/* MESIN, KAIN, PENGINPUT */
+
+.meta {
+  margin-top: 4px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+
+/* BARIS BADGE */
+
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 5px;
+
+  margin-top: 9px;
+}
+
+
+/* BADGE ROLL, KG, KENDALA */
+
+.badge {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  margin: 0;
+
+  padding: 5px 8px;
+
+  color: #4b5563;
+
+  font-size: 10px;
+  line-height: 1;
+
+  white-space: nowrap;
+
+  background: #f1f5f9;
+
+  border-radius: 999px;
+}
+
+
+/* STATUS DI KANAN ATAS */
+
+.status-badge {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  margin: 0;
+
+  padding: 5px 9px;
+
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1;
+
+  white-space: nowrap;
+
+  border-radius: 999px;
+}
+
+
+/* STATUS BERJALAN */
+
+.green {
+  color: #208d3d;
+  background: #e9f8ed;
+}
+
+
+/* STATUS PERBAIKAN */
+
+.orange {
+  color: #966100;
+  background: #fff5df;
+}
+
+
+/* STATUS BERHENTI */
+
+.red {
+  color: #c83129;
+  background: #fdebea;
+}
+
+
+/* JIKA DATA KOSONG */
+
+.empty {
+  padding: 30px;
+
+  color: var(--muted);
+
+  text-align: center;
+}
+
+    
+
     /* =====================================================
-       RIWAYAT
-    ====================================================== */
+   TOMBOL HAPUS RIWAYAT
+====================================================== */
 
-    .item {
+.delete-btn {
+  display: flex;
 
-      margin-bottom: 10px;
+  align-items: center;
+  justify-content: center;
 
-      padding: 14px;
+  width: auto;
 
-      background: #ffffff;
+  margin: 11px 0 0 auto;
 
-      border: 1px solid var(--border);
+  padding: 6px 11px;
 
-      border-radius: 14px;
+  color: #d33b32;
 
-    }
+  font-size: 10px;
+  font-weight: 700;
 
+  background: #fff5f4;
 
-    .itemtop {
+  border: 1px solid #f3b8b4;
+  border-radius: 8px;
 
-      display: flex;
+  cursor: pointer;
+}
 
-      justify-content: space-between;
 
-      gap: 8px;
+.delete-btn:hover {
+  background: #fdebea;
+}
 
-    }
 
+.delete-btn:disabled {
+  opacity: 0.55;
 
-    .meta {
+  cursor: not-allowed;
+}
 
-      margin-top: 5px;
-
-      color: var(--muted);
-
-      font-size: 12px;
-
-    }
-
-
-    .badge {
-
-      display: inline-block;
-
-      margin: 8px 5px 0 0;
-
-      padding: 5px 8px;
-
-      font-size: 11px;
-
-      background: #edf2f7;
-
-      border-radius: 999px;
-
-    }
-
-
-    .green {
-
-      color: #208d3d;
-
-      background: #e9f8ed;
-
-    }
-
-
-    .orange {
-
-      color: #966100;
-
-      background: #fff5df;
-
-    }
-
-
-    .red {
-
-      color: #c83129;
-
-      background: #fdebea;
-
-    }
-
-
-    .empty {
-
-      padding: 30px;
-
-      color: var(--muted);
-
-      text-align: center;
-
-    }
-
-
-    /* =====================================================
-       TOMBOL HAPUS
-    ====================================================== */
-
-    .delete-btn {
-
-      display: block;
-
-      width: 100%;
-
-      margin-top: 12px;
-
-      padding: 9px 12px;
-
-      color: #d33b32;
-
-      font-size: 13px;
-
-      font-weight: 700;
-
-      background: #fdebea;
-
-      border: 1px solid #f3b8b4;
-
-      border-radius: 9px;
-
-      cursor: pointer;
-
-    }
-
-
-    .delete-btn:hover {
-
-      background: #f8d0cd;
-
-    }
-
-
-    .delete-btn:disabled {
-
-      opacity: 0.55;
-
-      cursor: not-allowed;
-
-    }
-
-
+    
     /* =====================================================
        NAVIGASI BAWAH
     ====================================================== */
