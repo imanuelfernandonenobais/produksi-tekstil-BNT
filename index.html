@@ -495,96 +495,67 @@
        RIWAYAT
     ====================================================== */
 
-    .item {
-
-      margin-bottom: 10px;
-
-      padding: 14px;
-
-      background: #ffffff;
-
-      border: 1px solid var(--border);
-
-      border-radius: 14px;
-
-    }
-
-
     .itemtop {
 
-      display: flex;
+  display: flex;
 
-      justify-content: space-between;
+  align-items: flex-start;
 
-      gap: 8px;
+  justify-content: space-between;
 
-    }
+  gap: 10px;
 
-
-    .meta {
-
-      margin-top: 5px;
-
-      color: var(--muted);
-
-      font-size: 12px;
-
-    }
+}
 
 
-    .badge {
+.badge {
 
-      display: inline-block;
+  display: inline-flex;
 
-      margin: 8px 5px 0 0;
+  align-items: center;
 
-      padding: 5px 8px;
+  justify-content: center;
 
-      font-size: 11px;
+  width: auto;
 
-      background: #edf2f7;
+  height: auto;
 
-      border-radius: 999px;
+  margin: 8px 5px 0 0;
 
-    }
+  padding: 5px 8px;
 
+  font-size: 11px;
 
-    .green {
+  line-height: 1;
 
-      color: #208d3d;
+  white-space: nowrap;
 
-      background: #e9f8ed;
+  background: #edf2f7;
 
-    }
+  border-radius: 999px;
 
-
-    .orange {
-
-      color: #966100;
-
-      background: #fff5df;
-
-    }
+}
 
 
-    .red {
+/* STATUS DI KANAN ATAS RIWAYAT */
 
-      color: #c83129;
+.itemtop > .badge {
 
-      background: #fdebea;
+  flex: 0 0 auto;
 
-    }
+  align-self: flex-start;
 
+  margin: 0;
 
-    .empty {
+  padding: 5px 9px;
 
-      padding: 30px;
+  font-size: 10px;
 
-      color: var(--muted);
+  line-height: 1;
 
-      text-align: center;
+  white-space: nowrap;
 
-    }
+}
 
 
     /* =====================================================
